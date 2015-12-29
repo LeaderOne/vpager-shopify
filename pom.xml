@@ -26,6 +26,11 @@
                 <version>${log4j.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j-log4j12.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
@@ -33,7 +38,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>9.4.1207</version>
+                <version>${postgresql.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -44,6 +49,8 @@
         <log4j.version>1.2.14</log4j.version>
         <commons-lang3.version>3.4</commons-lang3.version>
         <spring-data-jpa.version>1.9.2.RELEASE</spring-data-jpa.version>
+        <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
+        <postgresql.version>9.4.1207</postgresql.version>
     </properties>
 
     <repositories>

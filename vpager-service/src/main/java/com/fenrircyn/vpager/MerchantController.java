@@ -1,7 +1,9 @@
 package com.fenrircyn.vpager;
 
 import com.fenrircyn.vpager.entities.Merchant;
+import com.fenrircyn.vpager.messages.NowServingMessage;
 import com.fenrircyn.vpager.repos.MerchantRepository;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,6 +20,9 @@ import javax.websocket.server.PathParam;
 public class MerchantController {
     @Resource
     private MerchantRepository merchantRepository;
+
+    @Resource
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @RequestMapping(method = RequestMethod.PUT, value = "/merchant/create")
     public Merchant createMerchant() {
@@ -36,6 +41,10 @@ public class MerchantController {
         merchant.setNowServing(merchant.getNowServing() + 1);
 
         merchant = merchantRepository.save(merchant);
+
+        NowServingMessage messageBroadcast = new NowServingMessage(merchantId, merchant.getNowServing());
+
+        simpMessagingTemplate.convertAndSend("/topic/nowserving/" + merchantId, messageBroadcast);
 
         return merchant.getNowServing();
     }
