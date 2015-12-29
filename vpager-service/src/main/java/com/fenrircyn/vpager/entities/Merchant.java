@@ -7,13 +7,13 @@ import java.io.Serializable;
  * Created by markelba on 12/27/15.
  */
 @Entity
-@Table(name = "ticketing.merchant")
+@Table(name = "merchant", schema = "ticketing")
 public class Merchant implements Serializable {
     private static final long serialVersionUID = 879636873487963L;
 
     @Id
     @Column(name = "merchant_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "now_serving")
