@@ -14,7 +14,8 @@ public class NowServingController {
 
     @MessageMapping("/nowserving")
     @SendTo("/topic/nowserving/{merchantId}")
-    public NowServingMessage nowServingMessage(@DestinationVariable long merchantId, long ticketNumber) throws Exception {
-        return new NowServingMessage(merchantId, ticketNumber);
+    public NowServingMessage nowServingMessage(@DestinationVariable long merchantId, long ticketNumber,
+                                               long lineLength) throws Exception {
+        return new NowServingMessage(merchantId, ticketNumber, lineLength);
     }
 }

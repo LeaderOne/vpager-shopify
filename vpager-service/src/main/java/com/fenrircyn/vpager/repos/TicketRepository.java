@@ -19,4 +19,7 @@ public interface TicketRepository extends CrudRepository<Ticket, Long> {
 
     @Query("SELECT t FROM Ticket AS t INNER JOIN t.merchant m WHERE m.id = :merchantId AND t.id < m.nowServing ORDER BY t.createTs")
     List<Ticket> getPreviousTicketsForMerchant(@Param("merchantId") long merchantId);
+
+    @Query("SELECT MAX(t.id) FROM Ticket AS t INNER JOIN t.merchant m WHERE m.id = :merchantId")
+    Long getLastTicketForMerchant(@Param("merchantId") long merchantId);
 }

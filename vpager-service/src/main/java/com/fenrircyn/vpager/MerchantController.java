@@ -28,6 +28,9 @@ public class MerchantController {
     private TicketRepository ticketRepository;
 
     @Resource
+    private TicketController ticketController;
+
+    @Resource
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @RequestMapping(method = RequestMethod.PUT, value = "/merchant/create")
@@ -69,11 +72,13 @@ public class MerchantController {
 
             merchant = merchantRepository.save(merchant);
 
-            NowServingMessage messageBroadcast = new NowServingMessage(merchantId, merchant.getNowServing());
+            long nowServing = merchant.getNowServing();
+
+            long lineLength = getNumberOfPeopleInLineForMerchant(merchantId).getBody();
+
+            NowServingMessage messageBroadcast = new NowServingMessage(merchantId, nowServing, lineLength);
 
             simpMessagingTemplate.convertAndSend("/topic/nowserving/" + merchantId, messageBroadcast);
-
-            long nowServing = merchant.getNowServing();
 
             return new ResponseEntity<Long>(nowServing, HttpStatus.OK);
         }
@@ -88,6 +93,22 @@ public class MerchantController {
             return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<Long>(merchant.getNowServing(), HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping("/merchant/{merchantId}/lineLength")
+    public ResponseEntity<Long> getNumberOfPeopleInLineForMerchant(@PathVariable long merchantId)
+    {
+        Merchant merchant = merchantRepository.findOne(merchantId);
+
+        if(merchant == null) {
+            return new ResponseEntity<Long>(HttpStatus.BAD_REQUEST);
+        } else {
+            Long ticketId = ticketRepository.getLastTicketForMerchant(merchantId);
+
+            Long placeInLine = ticketController.findMyPlaceInLine(merchantId, ticketId);
+
+            return new ResponseEntity<Long>(placeInLine, HttpStatus.OK);
         }
     }
 }

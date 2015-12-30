@@ -10,15 +10,26 @@ public class NowServingMessage implements Serializable {
 
     private long nowServingCustomer;
     private long merchantId;
+    private long lineLength;
 
     public NowServingMessage() {
         nowServingCustomer = 0;
         merchantId = 0;
+        lineLength = 0;
     }
 
-    public NowServingMessage(long merchantId, long ticketNumber) {
+    public NowServingMessage(long merchantId, long ticketNumber, long lineLength) {
         this.merchantId = merchantId;
         nowServingCustomer = ticketNumber;
+        this.lineLength = lineLength;
+    }
+
+    public long getLineLength() {
+        return lineLength;
+    }
+
+    public void setLineLength(long lineLength) {
+        this.lineLength = lineLength;
     }
 
     public long getNowServingCustomer() {

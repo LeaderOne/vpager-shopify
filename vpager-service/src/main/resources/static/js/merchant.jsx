@@ -44,14 +44,36 @@ var RewindCustomerButton = React.createClass({
     }
 });
 
+var LineLengthIndicator = React.createClass({
+    render: function() {
+        return (
+            <p>Number of people in line: {this.props.lineLength}</p>
+        );
+    }
+});
+
 var CustomerServiceBox = React.createClass({
+    displayName: 'CustomerServiceBox',
+    getInitialState: function() {
+       return {currentNumber: -1, lineLength: -1};
+    },
     render: function() {
         return (
             <div className="customerServiceBox">
                 <NumberIndicator currentNumber="0"></NumberIndicator>
                 <ServeCustomerButton></ServeCustomerButton>
                 <RewindCustomerButton></RewindCustomerButton>
+                <LineLengthIndicator lineLength="0"></LineLengthIndicator>
             </div>
         );
     }
 });
+
+
+if(!merchantId) {
+    ReactDOM.render(<h1>You don't have a merchant ID.  Did you use the wrong link?</h1>,
+        document.getElementById('content'));
+} else {
+    ReactDOM.render(<CustomerServiceBox></CustomerServiceBox>,
+        document.getElementById('content'));
+}
