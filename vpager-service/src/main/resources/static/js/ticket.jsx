@@ -12,6 +12,20 @@ var parseQueryString = function () {
     return objURL;
 };
 
+function checkNotifications() {
+    if(!("Notification" in window)) {
+        alert("This browser doesn't support notifications.  You'll need to watch the page for your number.");
+    } else if(Notification.permission === "granted") {
+
+    } else if(Notification.permission !== 'denied') {
+        Notification.requestPermission(function(permission) {
+            if(permission === "denied") {
+                alert("You have turned off notifications.  You'll need to watch the page for your number.");
+            }
+        });
+    }
+}
+
 var params = parseQueryString();
 
 var merchantId = params["merchantId"];
@@ -75,12 +89,20 @@ var NumberBox = React.createClass({
             console.log('Connected: ' + frame);
             stompClient.subscribe(self.props.nowServingTopic, function (nowServing) {
                 self.getCurrentNumber();
+
+                var nowServingId = JSON.parse(nowServing.body);
+                var options = {body: "You are first in line!", sound: "sound/alert.wav"};
+
+                if(nowServingId.nowServingCustomer == ticketId) {
+                    var notification = new Notification("Your order is ready!", options);
+                }
             });
         });
     },
     componentDidMount: function () {
         this.getCurrentNumber();
         this.connectToService();
+        checkNotifications();
     },
     getNewNumber: function() {
         console.log("In get new number");
