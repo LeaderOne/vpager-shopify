@@ -19,6 +19,8 @@ var ticketId = params["ticketId"];
 
 var numberUrl = "/ticket/" + merchantId + "/" + ticketId;
 var takeUrl = "/ticket/" + merchantId;
+var nowServingSocket = "/nowserving";
+var nowServingTopic = "/topic/nowserving/" + merchantId;
 
 var stompClient = null;
 
@@ -65,13 +67,13 @@ var NumberBox = React.createClass({
         });
     },
     connectToService: function () {
-        var socket = new SockJS('/nowserving');
+        var socket = new SockJS(this.props.nowServingSocket);
         var self = this;
 
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/nowserving/' + merchantId, function (nowServing) {
+            stompClient.subscribe(self.props.nowServingTopic, function (nowServing) {
                 self.getCurrentNumber();
             });
         });
@@ -96,7 +98,7 @@ var NumberBox = React.createClass({
                 window.location.href = "/ticket.html?merchantId=" + merchantId + "&ticketId=" + newTicketId;
             }.bind(this),
             error: function (xhr, status, err) {
-                console.error(this.props.url, status, err.toString());
+                console.error(this.props.takeUrl, status, err.toString());
             }.bind(this)
         });
     },
@@ -132,7 +134,7 @@ if(!merchantId) {
                 window.location.href = "/ticket.html?merchantId=" + merchantId + "&ticketId=" + newTicketId;
             }.bind(this),
             error: function (xhr, status, err) {
-                console.error(this.props.url, status, err.toString());
+                console.error("/ticket/" + merchantId, status, err.toString());
             }.bind(this)
         });
     }
@@ -143,7 +145,7 @@ if(!merchantId) {
     );
 } else {
     ReactDOM.render(
-        <NumberBox url={numberUrl} takeUrl={takeUrl}></NumberBox>,
+        <NumberBox url={numberUrl} takeUrl={takeUrl} nowServingTopic={nowServingTopic} nowServingSocket={nowServingSocket}></NumberBox>,
         document.getElementById('content')
     );
 }
