@@ -18,6 +18,7 @@ var merchantId = params["merchantId"];
 var ticketId = params["ticketId"];
 
 var numberUrl = "/ticket/" + merchantId + "/" + ticketId;
+var takeUrl = "/ticket/" + merchantId;
 
 var stompClient = null;
 
@@ -35,8 +36,8 @@ var NumberIndicator = React.createClass({
 var TakeNumberButton = React.createClass({
     render: function () {
         return (
-            <button className="takeNextNumber">
-                Hello world, I am a button!
+            <button className="takeNextNumber" onClick={this.props.onClick}>
+                Take Next Number!
             </button>
         );
     }
@@ -76,17 +77,70 @@ var NumberBox = React.createClass({
         this.getCurrentNumber();
         this.connectToService();
     },
+    getNewNumber: function() {
+        console.log("In get new number");
+
+        $.ajax({
+            type: 'PUT',
+            url: this.props.takeUrl,
+            dataType: 'text',
+            cache: false,
+            success: function (data) {
+                console.log("Received response from new ticket " + data);
+                var newTicket = JSON.parse(data);
+                var newTicketId = newTicket.id;
+
+                window.location.href = "/ticket.html?merchantId=" + merchantId + "&ticketId=" + newTicketId;
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
     render: function () {
         return (
             <div className="numberBox">
                 <NumberIndicator currentNumber={this.state.currentNumber}></NumberIndicator>
-                <TakeNumberButton></TakeNumberButton>
+                <TakeNumberButton onClick={this.getNewNumber}></TakeNumberButton>
             </div>
         );
     }
 });
 
-ReactDOM.render(
-    <NumberBox url={numberUrl}></NumberBox>,
-    document.getElementById('content')
-);
+if(!merchantId) {
+    ReactDOM.render(
+        <h1>You don't have a merchant selected.  Did you scan the wrong QR code?</h1>,
+        document.getElementById('content')
+    );
+} else if(!ticketId) {
+    function getFirstNumber() {
+        console.log("In get first number");
+
+        $.ajax({
+            type: 'PUT',
+            url: "/ticket/" + merchantId,
+            dataType: 'text',
+            cache: false,
+            success: function (data) {
+                console.log("Received response from new ticket " + data);
+                var newTicket = JSON.parse(data);
+                var newTicketId = newTicket.id;
+
+                window.location.href = "/ticket.html?merchantId=" + merchantId + "&ticketId=" + newTicketId;
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    }
+
+    ReactDOM.render(
+        <TakeNumberButton onClick={getFirstNumber} ></TakeNumberButton>,
+        document.getElementById('content')
+    );
+} else {
+    ReactDOM.render(
+        <NumberBox url={numberUrl} takeUrl={takeUrl}></NumberBox>,
+        document.getElementById('content')
+    );
+}
