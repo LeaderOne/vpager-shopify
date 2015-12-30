@@ -28,7 +28,10 @@ var NumberIndicator = React.createClass({
     },
     render: function () {
         return (
+            <div>
             <h1>My number is: {this.props.currentNumber}</h1>
+            <p>My ticket ID is: {ticketId}</p>
+            </div>
         );
     }
 });

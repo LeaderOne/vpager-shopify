@@ -22,7 +22,7 @@ public class Ticket implements Serializable {
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
 
-    @Column(name = "create_ts")
+    @Column(name = "create_ts", insertable = false)
     private Timestamp createTs;
 
     public Timestamp getCreateTs() {

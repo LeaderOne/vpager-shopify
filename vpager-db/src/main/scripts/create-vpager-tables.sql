@@ -21,7 +21,7 @@ CREATE TABLE ticketing.merchant
 CREATE TABLE ticketing.ticket
 (
   ticket_id SERIAL PRIMARY KEY,
-  merchant_id INT REFERENCES ticketing.merchant(merchant_id),
+  merchant_id INT REFERENCES ticketing.merchant(merchant_id) NOT NULL,
   create_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
