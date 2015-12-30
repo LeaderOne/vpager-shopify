@@ -40,6 +40,11 @@
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.kenglxn.qrgen</groupId>
+                <artifactId>javase</artifactId>
+                <version>${qrgen.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -51,12 +56,17 @@
         <spring-data-jpa.version>1.9.2.RELEASE</spring-data-jpa.version>
         <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
         <postgresql.version>9.4.1207</postgresql.version>
+        <qrgen.version>2.1.0</qrgen.version>
     </properties>
 
     <repositories>
         <repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
     <pluginRepositories>

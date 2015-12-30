@@ -5,15 +5,20 @@ import com.fenrircyn.vpager.entities.Ticket;
 import com.fenrircyn.vpager.messages.NowServingMessage;
 import com.fenrircyn.vpager.repos.MerchantRepository;
 import com.fenrircyn.vpager.repos.TicketRepository;
+import net.glxn.qrgen.core.image.ImageType;
+import net.glxn.qrgen.javase.QRCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -110,5 +115,18 @@ public class MerchantController {
 
             return new ResponseEntity<Long>(placeInLine, HttpStatus.OK);
         }
+    }
+
+    @RequestMapping(value = "/merchant/{merchantId}/hangoutashingle", method = RequestMethod.GET, produces = "image/jpg")
+    public @ResponseBody byte[] getQrCodeForMerchant(@PathVariable long merchantId, HttpServletRequest request) throws Exception {
+        String serverName = request.getServerName();
+        int serverPort = request.getServerPort();
+        String contextPath = request.getContextPath();
+
+        String finalQrCodeUrl = "http://" + serverName + ":" + serverPort + contextPath + "/ticket.html?merchantId=" + merchantId;
+
+        ByteArrayOutputStream qrCodeFile = QRCode.from(finalQrCodeUrl).to(ImageType.JPG).stream();
+
+        return qrCodeFile.toByteArray();
     }
 }
