@@ -25,10 +25,13 @@ var rewindUrl = "/merchant/" + merchantId + "/rewind";
 var lineLenUrl = "/merchant/" + merchantId + "/lineLength";
 var nowServingUrl = "/merchant/" + merchantId;
 
+var barcodeSrc = "/merchant/" + merchantId + "/hangoutashingle";
+var ticketHref = "/ticket.html?merchantId=" + merchantId;
+
 var NumberIndicator = React.createClass({
     render: function () {
         return (
-            <h1>Now serving: {this.props.nowServingCustomer}</h1>
+            <h1>Now Serving: {this.props.nowServingCustomer}</h1>
         );
     }
 });
@@ -57,6 +60,26 @@ var LineLengthIndicator = React.createClass({
     render: function() {
         return (
             <p>Number of people in line: {this.props.lineLength}</p>
+        );
+    }
+});
+
+var BarcodeImage = React.createClass({
+    render: function() {
+        return (
+            <a href={ticketHref}>
+            <img src={barcodeSrc}></img>
+            </a>
+        );
+    }
+});
+
+var BarcodeLink = React.createClass({
+    render: function() {
+        return (
+            <p>Your link is:<br/>
+            <a href={barcodeSrc}>{barcodeSrc}</a>
+            </p>
         );
     }
 });
@@ -145,8 +168,12 @@ var CustomerServiceBox = React.createClass({
             <div className="customerServiceBox">
                 <NumberIndicator nowServingCustomer={this.state.nowServingCustomer}></NumberIndicator>
                 <ServeCustomerButton onClick={this.serveCustomer}></ServeCustomerButton>
+                <br />
+                <br />
                 <RewindCustomerButton onClick={this.rewindCustomer}></RewindCustomerButton>
                 <LineLengthIndicator lineLength={this.state.lineLength}></LineLengthIndicator>
+                <BarcodeImage></BarcodeImage>
+                <BarcodeLink></BarcodeLink>
             </div>
         );
     }

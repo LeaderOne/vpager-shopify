@@ -111,7 +111,8 @@ public class MerchantController {
         } else {
             Long ticketId = ticketRepository.getLastTicketForMerchant(merchantId);
 
-            Long placeInLine = ticketController.findMyPlaceInLine(merchantId, ticketId);
+
+            Long placeInLine = ticketId == null ? 0 : ticketController.findMyPlaceInLine(merchantId, ticketId);
 
             return new ResponseEntity<Long>(placeInLine, HttpStatus.OK);
         }

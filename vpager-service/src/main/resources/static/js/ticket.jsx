@@ -80,6 +80,21 @@ var NumberBox = React.createClass({
             }.bind(this)
         });
     },
+    alertUser: function() {
+        var options = {body: "You are first in line!"};
+
+        var notification = new Notification("Your order is ready!", options);
+        window.navigator.vibrate([1000,50,1000,50,2000]);
+
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+        if( userAgent.match( /iPad/i ) || userAgent.match( /iPhone/i ) || userAgent.match( /iPod/i ) ) {
+            alert("Your order is ready!");
+
+        } else {
+            document.getElementById("alarm-sound").play();
+        }
+    },
     connectToService: function () {
         var socket = new SockJS(this.props.nowServingSocket);
         var self = this;
@@ -91,10 +106,10 @@ var NumberBox = React.createClass({
                 self.getCurrentNumber();
 
                 var nowServingId = JSON.parse(nowServing.body);
-                var options = {body: "You are first in line!", sound: "sound/alert.wav"};
+
 
                 if(nowServingId.nowServingCustomer == ticketId) {
-                    var notification = new Notification("Your order is ready!", options);
+                    self.alertUser();
                 }
             });
         });
