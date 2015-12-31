@@ -12,7 +12,7 @@
     </parent>
 
     <properties>
-        <docker.image.prefix>fenrircyn</docker.image.prefix>
+        <docker.image.prefix>leaderone</docker.image.prefix>
     </properties>
 
     <dependencies>
@@ -66,7 +66,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.3.8</version>
                 <configuration>
-                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+                    <imageName>${docker.image.prefix}/fenrircyn</imageName>
                     <dockerDirectory>src/main/docker</dockerDirectory>
                     <resources>
                         <resource>
