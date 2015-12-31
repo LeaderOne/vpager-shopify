@@ -31,7 +31,7 @@ var ticketHref = "/ticket.html?merchantId=" + merchantId;
 var NumberIndicator = React.createClass({
     render: function () {
         return (
-            <h1>Now Serving: {this.props.nowServingCustomer}</h1>
+            <h1>Now Serving Ticket ID: <u>{this.props.nowServingCustomer}</u></h1>
         );
     }
 });
@@ -59,7 +59,7 @@ var RewindCustomerButton = React.createClass({
 var LineLengthIndicator = React.createClass({
     render: function() {
         return (
-            <p>Number of people in line: {this.props.lineLength}</p>
+            <p>There are <u><b>{this.props.lineLength}</b></u> people in line.</p>
         );
     }
 });
@@ -78,7 +78,7 @@ var BarcodeLink = React.createClass({
     render: function() {
         return (
             <p>Your link is:<br/>
-            <a href={barcodeSrc}>{barcodeSrc}</a>
+            <a href={ticketHref}>{ticketHref}</a>
             </p>
         );
     }
@@ -172,7 +172,11 @@ var CustomerServiceBox = React.createClass({
                 <br />
                 <RewindCustomerButton onClick={this.rewindCustomer}></RewindCustomerButton>
                 <LineLengthIndicator lineLength={this.state.lineLength}></LineLengthIndicator>
+
+                <p>Your customers can scan the QR code below to take a ticket:</p>
                 <BarcodeImage></BarcodeImage>
+
+                <p>Or, if you aren't comfortable with a QR code, you can copy this link:</p>
                 <BarcodeLink></BarcodeLink>
             </div>
         );

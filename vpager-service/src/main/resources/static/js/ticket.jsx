@@ -15,12 +15,10 @@ var parseQueryString = function () {
 function checkNotifications() {
     if(!("Notification" in window)) {
         alert("This browser doesn't support notifications.  You'll need to watch the page for your number.");
-    } else if(Notification.permission === "granted") {
-
-    } else if(Notification.permission !== 'denied') {
+    } else if(Notification.permission !== 'granted') {
         Notification.requestPermission(function(permission) {
             if(permission === "denied") {
-                alert("You have turned off notifications.  You'll need to watch the page for your number.");
+                alert("You have turned off notifications.  You'll need to watch the page for your number, or reload the page.");
             }
         });
     }
@@ -45,8 +43,8 @@ var NumberIndicator = React.createClass({
     render: function () {
         return (
             <div>
-            <h1>My number is: {this.props.currentNumber}</h1>
-            <p>My ticket ID is: {ticketId}</p>
+            <h1>You are <u>&#x23;{this.props.currentNumber}</u> in line.</h1>
+            <p>My ticket ID is: {ticketId}.  We will alert you when your order is ready, so please stay on this page!</p>
             </div>
         );
     }
@@ -74,6 +72,10 @@ var NumberBox = React.createClass({
             cache: false,
             success: function (data) {
                 this.setState({currentNumber: data});
+
+                if(data < 3) {
+                    this.notifyUser();
+                }
             }.bind(this),
             error: function (xhr, status, err) {
                 console.error(this.props.url, status, err.toString());
@@ -94,6 +96,11 @@ var NumberBox = React.createClass({
         } else {
             document.getElementById("alarm-sound").play();
         }
+    },
+    notifyUser: function() {
+        var options = {body: "Your order is almost ready!"};
+
+        var notification = new Notification("Your order is almost ready!");
     },
     connectToService: function () {
         var socket = new SockJS(this.props.nowServingSocket);
