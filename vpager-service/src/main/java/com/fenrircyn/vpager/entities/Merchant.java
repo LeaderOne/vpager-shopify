@@ -1,5 +1,7 @@
 package com.fenrircyn.vpager.entities;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -44,5 +46,11 @@ public class Merchant implements Serializable {
 
     public void setShopifyShopUrl(String shopifyShopUrl) {
         this.shopifyShopUrl = shopifyShopUrl;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("merchant_id", id).append("now_serving", nowServing)
+                .append("shopify_shop_url", shopifyShopUrl).toString();
     }
 }

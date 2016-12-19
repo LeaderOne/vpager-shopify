@@ -4,6 +4,7 @@ import com.fenrircyn.vpager.entities.Merchant;
 import com.fenrircyn.vpager.entities.ShopifyWebhookContainer;
 import com.fenrircyn.vpager.entities.ShopifyWebhookRequest;
 import com.fenrircyn.vpager.entities.Ticket;
+import com.fenrircyn.vpager.filters.ShopifyWebhookValidator;
 import com.fenrircyn.vpager.repos.MerchantRepository;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.BeanFactory;
@@ -41,6 +42,10 @@ import java.util.List;
  */
 @RestController
 public class ShopifyController {
+    @Resource
+    private ShopifyWebhookValidator validator;
+
+
     @RequestMapping(value = "/shopify", method = RequestMethod.GET)
     public ResponseEntity<Merchant> testApp() {
         System.out.println("Incoming get request");
@@ -51,25 +56,12 @@ public class ShopifyController {
     @RequestMapping(value = "/shopify", method = RequestMethod.POST)
     public ResponseEntity<Merchant> testResponse(@RequestBody String postbody,
                                                  @RequestHeader(name = "X-Shopify-Shop-Domain") String shopDomain,
-                                                 @RequestHeader(name = "X-Shopify-Hmac-Sha256") String hmacSig) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
-        byte[] key = "577182d2f32909da7dcb5cf78a02f6b7c3a66cacd86ee75cd3d3be58e719f8e9".getBytes();
-        byte[] hmacSigBytes = DatatypeConverter.parseBase64Binary(hmacSig);
-        byte[] msgBytes = postbody.getBytes();
-
-        SecretKey macKey = new SecretKeySpec(key, "HmacSHA256");
-        Mac mac = Mac.getInstance("HmacSHA256");
-        mac.init(macKey);
-
-        byte[] computedDigest = mac.doFinal(msgBytes);
-
-        if(Arrays.equals(computedDigest, hmacSigBytes)) {
-            System.out.println("HMAC has passed validation.");
+                                                 @RequestHeader(name = "X-Shopify-Hmac-Sha256") String hmacSig)
+            throws NoSuchAlgorithmException, InvalidKeyException, IOException {
+        if(validator.validate(shopDomain, hmacSig, postbody)) {
+            return ResponseEntity.ok(new Merchant());
         } else {
-            System.err.println("HMAC did NOT pass validation.");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
-        System.out.println("Incoming request from " + shopDomain + " with signature " + hmacSig + ":\n" + postbody);
-
-        return ResponseEntity.ok(new Merchant());
     }
 }
