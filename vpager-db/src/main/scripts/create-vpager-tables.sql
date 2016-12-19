@@ -15,7 +15,8 @@ ALTER SCHEMA ticketing OWNER TO vpagerowner;
 CREATE TABLE ticketing.merchant
 (
   merchant_id SERIAL PRIMARY KEY,
-  now_serving INT DEFAULT 0
+  now_serving INT DEFAULT 0,
+  shopify_shop_url TEXT UNIQUE
 );
 
 CREATE TABLE ticketing.ticket

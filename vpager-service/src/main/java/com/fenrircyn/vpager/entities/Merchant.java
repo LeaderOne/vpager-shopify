@@ -19,6 +19,9 @@ public class Merchant implements Serializable {
     @Column(name = "now_serving")
     private long nowServing;
 
+    @Column(name = "shopify_shop_url")
+    private String shopifyShopUrl;
+
     public long getId() {
         return id;
     }
@@ -33,5 +36,13 @@ public class Merchant implements Serializable {
 
     public void setNowServing(long nowServing) {
         this.nowServing = nowServing;
+    }
+
+    public String getShopifyShopUrl() {
+        return shopifyShopUrl;
+    }
+
+    public void setShopifyShopUrl(String shopifyShopUrl) {
+        this.shopifyShopUrl = shopifyShopUrl;
     }
 }
