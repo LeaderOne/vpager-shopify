@@ -25,6 +25,9 @@ public class Ticket implements Serializable {
     @Column(name = "create_ts", insertable = false)
     private Timestamp createTs;
 
+    @Column(name = "shopify_order_id", insertable = false)
+    private long shopifyOrderId;
+
     public Timestamp getCreateTs() {
         return createTs;
     }
@@ -47,5 +50,13 @@ public class Ticket implements Serializable {
 
     public void setMerchant(Merchant merchant) {
         this.merchant = merchant;
+    }
+
+    public long getShopifyOrderId() {
+        return shopifyOrderId;
+    }
+
+    public void setShopifyOrderId(long shopifyOrderId) {
+        this.shopifyOrderId = shopifyOrderId;
     }
 }

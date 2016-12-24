@@ -1,12 +1,17 @@
 package com.fenrircyn.vpager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fenrircyn.vpager.dto.Order;
 import com.fenrircyn.vpager.entities.Merchant;
 import com.fenrircyn.vpager.entities.ShopifyWebhookContainer;
 import com.fenrircyn.vpager.entities.ShopifyWebhookRequest;
 import com.fenrircyn.vpager.entities.Ticket;
 import com.fenrircyn.vpager.filters.ShopifyWebhookValidator;
 import com.fenrircyn.vpager.repos.MerchantRepository;
+import com.fenrircyn.vpager.repos.TicketRepository;
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -42,9 +47,19 @@ import java.util.List;
  */
 @RestController
 public class ShopifyController {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Resource
     private ShopifyWebhookValidator validator;
 
+    @Resource
+    private MerchantRepository merchantRepository;
+
+    @Resource
+    private TicketRepository ticketRepository;
+
+    @Resource
+    private ObjectMapper objectMapper;
 
     @RequestMapping(value = "/shopify", method = RequestMethod.GET)
     public ResponseEntity<Merchant> testApp() {
@@ -54,12 +69,29 @@ public class ShopifyController {
     }
 
     @RequestMapping(value = "/shopify", method = RequestMethod.POST)
-    public ResponseEntity<Merchant> testResponse(@RequestBody String postbody,
-                                                 @RequestHeader(name = "X-Shopify-Shop-Domain") String shopDomain,
-                                                 @RequestHeader(name = "X-Shopify-Hmac-Sha256") String hmacSig)
+    public ResponseEntity<Ticket> createOrder(@RequestBody String postbody,
+                                              @RequestHeader(name = "X-Shopify-Shop-Domain") String shopDomain,
+                                              @RequestHeader(name = "X-Shopify-Hmac-Sha256") String hmacSig)
             throws NoSuchAlgorithmException, InvalidKeyException, IOException {
-        if(validator.validate(shopDomain, hmacSig, postbody)) {
-            return ResponseEntity.ok(new Merchant());
+        if (validator.validate(shopDomain, hmacSig, postbody)) {
+            Order order = objectMapper.readValue(postbody, Order.class);
+
+            logger.debug("Inserting new order for %d", order.getId());
+            Merchant merchant = merchantRepository.getByShopifyShopUrl(shopDomain);
+
+            if (merchant == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } else {
+                logger.debug("Inserting new order %d for merchant %s", order.getId(), merchant.getShopifyShopUrl());
+                Ticket ticket = new Ticket();
+
+                ticket.setMerchant(merchant);
+                ticket.setShopifyOrderId(order.getId());
+
+                ticket = ticketRepository.save(ticket);
+
+                return ResponseEntity.ok(ticket);
+            }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

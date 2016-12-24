@@ -23,6 +23,7 @@ CREATE TABLE ticketing.ticket
 (
   ticket_id SERIAL PRIMARY KEY,
   merchant_id INT REFERENCES ticketing.merchant(merchant_id) NOT NULL,
+  shopify_order_id BIGINT UNIQUE,
   create_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
