@@ -1,15 +1,8 @@
-CREATE USER vpagerowner WITH PASSWORD '1WBbg625PG%';
-CREATE DATABASE vpager;
-
-GRANT ALL PRIVILEGES ON DATABASE vpager TO vpagerowner;
-REVOKE ALL ON DATABASE vpager FROM PUBLIC;
+CREATE SCHEMA ticketing;
+GRANT ALL PRIVILEGES ON SCHEMA ticketing TO vpagerowner;
 
 CREATE ROLE standarduser;
 CREATE USER vpageruser WITH PASSWORD 'vpageruser';
-
-CREATE SCHEMA ticketing;
-GRANT ALL PRIVILEGES ON SCHEMA ticketing TO vpagerowner;
-ALTER SCHEMA ticketing OWNER TO vpagerowner;
 
 CREATE TABLE ticketing.merchant
 (
@@ -29,9 +22,10 @@ CREATE TABLE ticketing.ticket
 ALTER TABLE ticketing.ticket OWNER TO vpagerowner;
 ALTER TABLE ticketing.merchant OWNER TO vpagerowner;
 
+GRANT standarduser TO vpageruser;
+
 GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA ticketing TO standarduser;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ticketing TO standarduser;
 GRANT USAGE ON SCHEMA ticketing TO standarduser;
 
 GRANT CONNECT ON DATABASE vpager TO standarduser;
-GRANT standarduser TO vpageruser;
