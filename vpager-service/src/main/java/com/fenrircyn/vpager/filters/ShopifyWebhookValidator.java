@@ -73,9 +73,9 @@ public class ShopifyWebhookValidator {
         Merchant merchant = merchantRepository.getByShopifyShopUrl(shopifyShopUrl);
 
         if (merchant == null) {
-            logger.warn("Merchant filter did NOT pass validation");
+            logger.warn("Merchant filter did NOT pass validation, URL was %s", shopifyShopUrl);
         } else {
-            logger.info("Merchant filter passed validation");
+            logger.info("Merchant filter passed validation for URL %s", shopifyShopUrl);
         }
 
         return merchant;
