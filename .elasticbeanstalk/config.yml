@@ -6,7 +6,7 @@ environment-defaults:
     branch: null
     repository: null
 deploy:
-  artifact: vpager-service/target/vpager-service-0.1.0.jar
+  artifact: vpager-service/target/vpager-service.jar
 global:
   application_name: VPager
   default_ec2_keyname: zealcon-bamboo-key
