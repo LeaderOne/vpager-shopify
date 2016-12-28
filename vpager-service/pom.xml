@@ -71,8 +71,9 @@
                 <version>4.0.3</version>
                 <configuration>
                     <driver>org.postgresql.Driver</driver>
-                    <url>jdbc:postgresql://localhost:32768/vpager</url>
-                    <serverId>vpager.test.owner</serverId>
+                    <url>${env.FLYWAY_URL}</url>
+                    <user>${env.FLYWAY_USER}</user>
+                    <password>${env.FLYWAY_PASSWORD}</password>
                 </configuration>
                 <dependencies>
                     <dependency>
