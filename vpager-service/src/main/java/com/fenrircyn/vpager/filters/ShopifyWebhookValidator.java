@@ -75,7 +75,7 @@ public class ShopifyWebhookValidator {
         if (merchant == null) {
             logger.warn("Merchant filter did NOT pass validation, URL was: " + shopifyShopUrl);
         } else {
-            logger.info("Merchant filter passed validation for URL " + shopifyShopUrl);
+            logger.info("Merchant filter passed validation for URL %s", shopifyShopUrl);
         }
 
         return merchant;
