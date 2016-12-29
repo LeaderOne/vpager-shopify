@@ -8,4 +8,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface MerchantRepository extends CrudRepository<Merchant, Long> {
     Merchant getByShopifyShopUrl(String shopifyShopUrl);
+    Merchant getByEmail(String email);
 }

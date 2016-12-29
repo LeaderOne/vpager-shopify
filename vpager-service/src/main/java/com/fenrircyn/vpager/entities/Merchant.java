@@ -24,6 +24,15 @@ public class Merchant implements Serializable {
     @Column(name = "shopify_shop_url")
     private String shopifyShopUrl;
 
+    @Column(name = "email")
+    private String email;
+
+    public Merchant() {}
+
+    public Merchant(String contactEmail) {
+        this.email = contactEmail;
+    }
+
     public long getId() {
         return id;
     }
@@ -48,9 +57,17 @@ public class Merchant implements Serializable {
         this.shopifyShopUrl = shopifyShopUrl;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("merchant_id", id).append("now_serving", nowServing)
-                .append("shopify_shop_url", shopifyShopUrl).toString();
+                .append("shopify_shop_url", shopifyShopUrl).append("email", email).toString();
     }
 }
