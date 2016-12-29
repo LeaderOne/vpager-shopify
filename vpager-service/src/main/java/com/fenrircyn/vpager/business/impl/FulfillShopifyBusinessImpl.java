@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -44,9 +45,14 @@ public class FulfillShopifyBusinessImpl implements FulfillShopifyBusiness {
 
         logger.debug("Sending fulfillment information to " + fulfillmentUrl);
 
-        ResponseEntity<Fulfillment> response = zshopRestTemplate.postForEntity(fulfillmentUrl, fulfillment, Fulfillment.class);
+        try {
+            ResponseEntity<Fulfillment> response = zshopRestTemplate.postForEntity(fulfillmentUrl, fulfillment, Fulfillment.class);
 
-        logger.debug("Server response was {} to create fullfillment {} for merchant {} order number {}",
-                response.getStatusCode(), response.getBody().getId(), merchant.getId(), order.getId());
+            logger.debug("Server response was {} to create fullfillment {} for merchant {} order number {}",
+                    response.getStatusCode(), response.getBody().getId(), merchant.getId(), order.getId());
+        } catch (RestClientException e) {
+            logger.error("Unable to create fulfillment for order id " + order.getId() +
+                    ", line ID " + lineItem.getId() + ", merchant " + merchant.getId(), e);
+        }
     }
 }
