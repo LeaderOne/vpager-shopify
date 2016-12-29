@@ -36,7 +36,7 @@ public class MerchantBusinessImpl implements MerchantBusiness {
 
         for(LineItem lineItem : order.getLineItems()) {
             for (int i = 0; i < lineItem.getQuantity(); i++) {
-                logger.debug("Creating merchant from email %s for line item %d with %d tickets", contactEmail, lineItem.getId(), lineItem.getQuantity());
+                logger.debug("Creating merchant from email {} for line item {} with {} tickets", contactEmail, lineItem.getId(), lineItem.getQuantity());
                 Merchant merchant = new Merchant(contactEmail);
                 merchant = merchantRepository.save(merchant);
 

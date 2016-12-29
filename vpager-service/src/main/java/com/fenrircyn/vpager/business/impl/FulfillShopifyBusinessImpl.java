@@ -42,9 +42,11 @@ public class FulfillShopifyBusinessImpl implements FulfillShopifyBusiness {
 
         String fulfillmentUrl = zshopFulfillmentUrl + order.getId() + "/fulfillments.json";
 
+        logger.debug("Sending fulfillment information to " + fulfillmentUrl);
+
         ResponseEntity<Fulfillment> response = zshopRestTemplate.postForEntity(fulfillmentUrl, fulfillment, Fulfillment.class);
 
-        logger.debug("Server response was %s to create fullfillment %d for merchant %d order number %d",
+        logger.debug("Server response was {} to create fullfillment {} for merchant {} order number {}",
                 response.getStatusCode(), response.getBody().getId(), merchant.getId(), order.getId());
     }
 }

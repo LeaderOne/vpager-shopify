@@ -47,7 +47,7 @@ public class ShopifyController {
         if (validator.validate(shopDomain, hmacSig, postbody)) {
             Order order = objectMapper.readValue(postbody, Order.class);
 
-            logger.debug("Received order %d from email address %s (contact email %s) with %d line items", order.getId(), order.getEmail(), order.getContactEmail(), CollectionUtils.size(order.getLineItems()));
+            logger.debug("Received order {} from email address {} (contact email {}) with {} line items", order.getId(), order.getEmail(), order.getContactEmail(), CollectionUtils.size(order.getLineItems()));
 
             merchants = merchantBusiness.createMerchantsFromOrder(order);
 
