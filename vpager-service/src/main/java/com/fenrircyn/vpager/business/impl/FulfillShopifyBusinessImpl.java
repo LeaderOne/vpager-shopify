@@ -53,7 +53,7 @@ public class FulfillShopifyBusinessImpl implements FulfillShopifyBusiness {
                     response.getStatusCode(), response.getBody().getId(), merchant.getId(), order.getId());
         } catch (HttpClientErrorException e) {
             logger.error("Unable to create fulfillment, status code " + e.getStatusCode() + " for order id " + order.getId() +
-                    ", line ID " + lineItem.getId() + ", merchant " + merchant.getId(), e);
+                    ", line ID " + lineItem.getId() + ", merchant " + merchant.getId() + ", body:\n" + e.getResponseBodyAsString(), e);
         }
     }
 }
