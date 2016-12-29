@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -50,8 +51,8 @@ public class FulfillShopifyBusinessImpl implements FulfillShopifyBusiness {
 
             logger.debug("Server response was {} to create fullfillment {} for merchant {} order number {}",
                     response.getStatusCode(), response.getBody().getId(), merchant.getId(), order.getId());
-        } catch (RestClientException e) {
-            logger.error("Unable to create fulfillment for order id " + order.getId() +
+        } catch (HttpClientErrorException e) {
+            logger.error("Unable to create fulfillment, status code " + e.getStatusCode() + " for order id " + order.getId() +
                     ", line ID " + lineItem.getId() + ", merchant " + merchant.getId(), e);
         }
     }

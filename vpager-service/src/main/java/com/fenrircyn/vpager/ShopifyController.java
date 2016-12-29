@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -38,6 +39,7 @@ public class ShopifyController {
     private ObjectMapper objectMapper;
 
     @RequestMapping(value = "/shopify", method = RequestMethod.POST)
+    @Transactional
     public ResponseEntity<List<Merchant>> createVPagersFromOrder(@RequestBody String postbody,
                                                            @RequestHeader(name = "X-Shopify-Shop-Domain") String shopDomain,
                                                            @RequestHeader(name = "X-Shopify-Hmac-Sha256") String hmacSig)
