@@ -1,6 +1,8 @@
 package com.fenrircyn.vpager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fenrircyn.vpager.filters.ShopifyWebhookValidator;
+import org.codehaus.jackson.io.CharacterEscapes;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +25,7 @@ import java.util.List;
 public class ShopifyConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public RestTemplate shopifyApiRestTemplate() {
-        return new RestTemplate(Arrays.asList(new MappingJackson2HttpMessageConverter()));
+        return new RestTemplate();
     }
 
     @Override
