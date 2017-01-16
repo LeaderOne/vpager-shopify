@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:32768/vpager
+    username: vpageruser
+    password: vpageruser
+  data:
+    jpa:
+      repositories:
+        enabled: true
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+server:
+  port: 4567
+shopify:
+  shop: zshop8
+  scopes: read_customers,read_orders
+  option: per-user
+  api:
+    shared:
+      secret: bb01e6087cd1236fc647ac672dee8ab3
+vpager:
+      url: http://shopify-test.us-east-1.elasticbeanstalk.com
+logging:
+  level:
+    com:
+      fenrircyn: DEBUG
+security:
+  oauth2:
+    client:
+      clientId: 22fa2b42d192ec384e65c88759beb3ca
+      clientSecret: bb01e6087cd1236fc647ac672dee8ab3
+      accessTokenUri: https://${shopify.shop}.myshopify.com/admin/oauth/access_token
+      userAuthorizationUri: https://${shopify.shop}.myshopify.com/admin/oauth/authorize?scope=${shopify.scopes}&grant_options[]=${shopify.option}
+      tokenName: access_token
+      authenticationScheme: query
+      clientAuthenticationScheme: form
+      pre-established-redirect-uri: https://9b1525ed.ngrok.io/login
+      registered-redirect-uri: https://9b1525ed.ngrok.io/login
+      use-current-uri: false
+    resource:
+      userInfoUri: https://${shopify.shop}.myshopify.com/admin/shop.json

@@ -36,6 +36,37 @@ public class ShopifyWebhookValidator {
     @Resource
     private MerchantRepository merchantRepository;
 
+    public boolean validate(String hmacSig, String body) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
+        if (isValidHmac(body, hmacSig)) {
+            logger.debug("Request has passed validation.");
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isValidHmac(String postbody, String hmacSig) throws NoSuchAlgorithmException, IOException, InvalidKeyException {
+        byte[] key = shopifySharedSecret.getBytes();
+        byte[] hmacSigBytes = DatatypeConverter.parseBase64Binary(hmacSig);
+        byte[] msgBytes = postbody.getBytes("UTF-8");
+
+        SecretKey macKey = new SecretKeySpec(key, "HmacSHA256");
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(macKey);
+
+        byte[] computedDigest = mac.doFinal(msgBytes);
+
+        if (Arrays.equals(computedDigest, hmacSigBytes)) {
+            logger.debug("Request has passed HMAC validation for anonymous");
+            return true;
+        } else {
+            logger.warn("HMAC filter did NOT pass validation anonymous");
+
+            return false;
+        }
+    }
+
     public boolean validate(String shopifyShopUrl, String hmacSig, String body) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
         Merchant merchant = getRegisteredMerchant(shopifyShopUrl);
 
