@@ -1,5 +1,6 @@
 package com.fenrircyn.vpager;
 
+import org.apache.catalina.filters.RequestDumperFilter;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
@@ -34,7 +35,7 @@ public class ShopifyConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.antMatcher("/**").authorizeRequests().antMatchers("/login**", "/shopify**").permitAll().anyRequest()
+        http.antMatcher("/**").authorizeRequests().antMatchers("/login**", "/shopify**", "/shopify/**").permitAll().anyRequest()
                 .authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
                 .logoutSuccessUrl("/").permitAll()
@@ -63,6 +64,15 @@ public class ShopifyConfig extends WebSecurityConfigurerAdapter {
         vpagerFilter.setTokenServices(tokenServices);
 
         return vpagerFilter;
+    }
+
+    @Bean
+    public FilterRegistrationBean requestDumperFilter() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        Filter requestDumperFilter = new RequestDumperFilter();
+        registration.setFilter(requestDumperFilter);
+        registration.addUrlPatterns("/*");
+        return registration;
     }
 
     @Bean
