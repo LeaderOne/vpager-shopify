@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Install Webhooks?</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <form action="#" th:action="@{/shopify/install}" method="post">
+        <input type="hidden" name="shop" th:value="${param.shop[0]}" />
+        <input type="hidden" name="code" th:value="${param.code[0]}" />
+        <input type="hidden" name="timestamp" th:value="${param.timestamp[0]}" />
+        <input type="hidden" name="hmac" th:value="${param.hmac[0]}" />
+
+        <button type="submit">Install webhook?</button>
+    </form>
+</body>
+</html>

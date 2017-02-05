@@ -1,5 +1,8 @@
 package com.fenrircyn.vpager;
 
+import com.fenrircyn.vpager.filters.ShopifyLoginFilter;
+import com.fenrircyn.vpager.filters.ShopifyProxyFilter;
+import com.fenrircyn.vpager.filters.ShopifyValidator;
 import org.apache.catalina.filters.RequestDumperFilter;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
@@ -33,9 +36,11 @@ public class ShopifyConfig extends WebSecurityConfigurerAdapter {
         return new RestTemplate();
     }
 
+    //Shopify paths must be unprotected; Shopify strips set-cookie off of the requests and responses, so there's no way to keep them.
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.antMatcher("/**").authorizeRequests().antMatchers("/login**", "/shopify**", "/shopify/**").permitAll().anyRequest()
+//        http.antMatcher("/**").authorizeRequests().antMatchers("/login**", "/shopify**", "/shopify/**").permitAll().anyRequest()
+        http.antMatcher("/**").authorizeRequests().antMatchers("/login**", "/").permitAll().anyRequest()
                 .authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
                 .logoutSuccessUrl("/").permitAll()
@@ -72,6 +77,29 @@ public class ShopifyConfig extends WebSecurityConfigurerAdapter {
         Filter requestDumperFilter = new RequestDumperFilter();
         registration.setFilter(requestDumperFilter);
         registration.addUrlPatterns("/*");
+        return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean shopifyProxyFilter(ShopifyValidator validator) {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        Filter proxyFilter = new ShopifyProxyFilter(validator);
+
+        registration.setFilter(proxyFilter);
+        registration.addUrlPatterns("/shopify/client/*");
+
+        return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean shopifyLoginFilter(ShopifyValidator validator) {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        Filter loginFilter = new ShopifyLoginFilter(validator);
+
+        registration.setFilter(loginFilter);
+        registration.addUrlPatterns("/login");
+        registration.setOrder(-101);
+
         return registration;
     }
 

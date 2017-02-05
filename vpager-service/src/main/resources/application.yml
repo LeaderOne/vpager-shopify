@@ -16,10 +16,6 @@ server:
 shopify:
   shop: zshop8
   scopes: read_customers,read_orders
-  option: per-user
-  api:
-    shared:
-      secret: bb01e6087cd1236fc647ac672dee8ab3
 vpager:
       url: http://shopify-test.us-east-1.elasticbeanstalk.com
 logging:
@@ -29,15 +25,15 @@ logging:
 security:
   oauth2:
     client:
-      clientId: 22fa2b42d192ec384e65c88759beb3ca
-      clientSecret: bb01e6087cd1236fc647ac672dee8ab3
+      clientId: 03e30691fc549632ea4fb7e16bf6457b
+      clientSecret: 052e216f94e625a68f0c8b571b51b6db
       accessTokenUri: https://${shopify.shop}.myshopify.com/admin/oauth/access_token
-      userAuthorizationUri: https://${shopify.shop}.myshopify.com/admin/oauth/authorize?scope=${shopify.scopes}&grant_options[]=${shopify.option}
+      userAuthorizationUri: https://${shopify.shop}.myshopify.com/admin/oauth/authorize?scope=${shopify.scopes}&grant_options[]=
       tokenName: access_token
       authenticationScheme: query
       clientAuthenticationScheme: form
-      pre-established-redirect-uri: https://9b1525ed.ngrok.io/login
-      registered-redirect-uri: https://9b1525ed.ngrok.io/login
+      pre-established-redirect-uri: https://ee232c57.ngrok.io/login
+      registered-redirect-uri: https://ee232c57.ngrok.io/login
       use-current-uri: false
     resource:
       userInfoUri: https://${shopify.shop}.myshopify.com/admin/shop.json
