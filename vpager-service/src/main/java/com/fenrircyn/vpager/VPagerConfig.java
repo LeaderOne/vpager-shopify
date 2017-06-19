@@ -1,6 +1,6 @@
 package com.fenrircyn.vpager;
 
-import com.fenrircyn.vpager.filters.ShopifyLoginFilter;
+import com.fenrircyn.vpager.filters.ShopifyInstallVerificationFilter;
 import com.fenrircyn.vpager.filters.ShopifyProxyFilter;
 import com.fenrircyn.vpager.filters.ShopifyValidator;
 import org.apache.catalina.filters.RequestDumperFilter;
@@ -36,21 +36,13 @@ public class VPagerConfig extends WebSecurityConfigurerAdapter {
         return new RestTemplate();
     }
 
-    @Resource
-    private ShopifyValidator shopifyValidator;
-
-    //Shopify paths must be unprotected; Shopify strips set-cookie off of the requests and responses, so there's no way to keep them.
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.antMatcher("/**").authorizeRequests().antMatchers("/login**", "/shopify**", "/shopify/**").permitAll().anyRequest()
-        http.antMatcher("/**")
-                .authorizeRequests()
-                    .antMatchers("/login**").permitAll()
-                    .anyRequest().authenticated()
-                .and().exceptionHandling()
-                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")).and().logout()
-                    .logoutSuccessUrl("/").permitAll()
-                    .and().csrf().disable()
+        http.antMatcher("/**").authorizeRequests().antMatchers("/install**", "/shopify**", "/shopify/**").permitAll().anyRequest()
+                .authenticated().and().exceptionHandling()
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/install")).and().logout()
+                .logoutSuccessUrl("/").permitAll()
+                .and().csrf().disable()
                 .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
     }
 
@@ -59,13 +51,13 @@ public class VPagerConfig extends WebSecurityConfigurerAdapter {
     public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(filter);
-        registration.setOrder(-100);
+        registration.setOrder(-10);
         return registration;
     }
 
     private Filter ssoFilter() {
         OAuth2ClientAuthenticationProcessingFilter vpagerFilter = new OAuth2ClientAuthenticationProcessingFilter(
-                "/login");
+                "/install");
 
         OAuth2RestTemplate shopifyTemplate = new OAuth2RestTemplate(shopify(), oauth2ClientContext);
         vpagerFilter.setRestTemplate(shopifyTemplate);
@@ -96,12 +88,18 @@ public class VPagerConfig extends WebSecurityConfigurerAdapter {
         return registration;
     }
 
-//    @Bean
-    public FilterRegistrationBean shopifyLoginFilter(ShopifyLoginFilter shopifyLoginFilter) {
+    @Bean
+    public ShopifyInstallVerificationFilter shopifyLoginFilter(ShopifyValidator shopifyValidator) {
+        return new ShopifyInstallVerificationFilter(shopifyValidator);
+    }
+
+    @Bean
+    public FilterRegistrationBean shopifyLoginFilterRegistration(ShopifyInstallVerificationFilter shopifyInstallVerificationFilter) {
         FilterRegistrationBean registration = new FilterRegistrationBean();
 
-        registration.setFilter(shopifyLoginFilter);
-        registration.addUrlPatterns("/login");
+        registration.setFilter(shopifyInstallVerificationFilter);
+        registration.addUrlPatterns("/*");
+        registration.setOrder(-100);
 
         return registration;
     }

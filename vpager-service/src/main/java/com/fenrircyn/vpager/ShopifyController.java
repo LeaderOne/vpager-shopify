@@ -8,6 +8,7 @@ import com.fenrircyn.vpager.entities.Merchant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -35,18 +36,26 @@ public class ShopifyController {
     @Resource
     private OAuth2RestTemplate authenticatedTemplate;
 
-    @RequestMapping(value = "/shopify/install", method = RequestMethod.POST)
+    @Value("vpager.url")
+    private String vpagerAddress;
+
+    @RequestMapping(value = "/shopify/install", method = RequestMethod.GET)
     public String installVPager(@RequestParam("shop") String shop //Shopify included automatically
      ) throws NoSuchAlgorithmException, InvalidKeyException, IOException {
+        logger.debug("Installing webhook for shop {}", shop);
         Merchant merchant = merchantBusiness.createMerchantFromUrl(shop);
+
+        logger.debug("Created merchant {} for shop {}", merchant.getId(), shop);
 
         Webhook webhook = new Webhook();
 
         webhook.setTopic("orders/create");
-        webhook.setAddress("https://ecca17cf.ngrok.io/shopify");
+        webhook.setAddress(vpagerAddress + "/shopify");
         webhook.setFormat("json");
 
         String url = "https://" + shop + "/admin/webhooks.json";
+
+        logger.debug("Preparing to send webhook request to {} for merchant {}", url, merchant.getId());
 
         ResponseEntity<Webhook> responseEntity = authenticatedTemplate.postForEntity(url, webhook, Webhook.class);
 

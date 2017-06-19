@@ -17,7 +17,7 @@ shopify:
   shop: zshop8
   scopes: read_customers,read_orders
 vpager:
-      url: http://shopify-test.us-east-1.elasticbeanstalk.com
+      url: https://a9821e95.ngrok.io/
 logging:
   level:
     com:
@@ -32,8 +32,8 @@ security:
       tokenName: access_token
       authenticationScheme: query
       clientAuthenticationScheme: form
-      pre-established-redirect-uri: https://ecca17cf.ngrok.io/login
-      registered-redirect-uri: https://ecca17cf.ngrok.io/login
+      pre-established-redirect-uri: https://a9821e95.ngrok.io/install
+      registered-redirect-uri: https://a9821e95.ngrok.io/install
       use-current-uri: false
     resource:
-      userInfoUri: https://nowhere
+      userInfoUri: https://${shopify.shop}.myshopify.com/admin/shop.json

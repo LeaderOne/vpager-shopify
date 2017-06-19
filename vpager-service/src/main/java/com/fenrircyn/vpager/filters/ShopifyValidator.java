@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 @Component
 public class ShopifyValidator {
@@ -29,10 +30,12 @@ public class ShopifyValidator {
     @Resource
     private MerchantRepository merchantRepository;
 
+    private Pattern shopifyFilter = Pattern.compile("[0-9a-zA-Z\\-]+\\.myshopify\\.com");
+
     public boolean validateBase64Encoded(String shopifyShopUrl, String hmacSig64, String body) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
         Merchant merchant = getRegisteredMerchant(shopifyShopUrl);
 
-        if (merchant != null && isValidHmac(body, hmacSig64, merchant,
+        if (merchant != null && isValidHmac(body, hmacSig64, merchant.getShopifyShopUrl(),
                 DatatypeConverter::parseBase64Binary, DatatypeConverter::printBase64Binary)) {
             logger.debug("Request has passed validation.");
 
@@ -46,7 +49,13 @@ public class ShopifyValidator {
         Merchant merchant = getRegisteredMerchant(shopifyShopUrl);
         logger.debug("In validateHexEncoded, hmac is {}", hmacSigHex);
 
-        if (merchant != null && isValidHmac(body, hmacSigHex, merchant,
+        return validateHexEncodedNoMerchant(merchant.getShopifyShopUrl(), hmacSigHex, body);
+    }
+
+    public boolean validateHexEncodedNoMerchant(String shopifyShopUrl, String hmacSigHex, String body) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
+        logger.debug("In validateHexEncoded, hmac is {}", hmacSigHex);
+
+        if (isValidHostname(shopifyShopUrl) && isValidHmac(body, hmacSigHex, shopifyShopUrl,
                 DatatypeConverter::parseHexBinary, DatatypeConverter::printHexBinary)) {
             logger.debug("Request has passed validation.");
 
@@ -56,7 +65,19 @@ public class ShopifyValidator {
         }
     }
 
-    private boolean isValidHmac(String postbody, String hmacSig, Merchant merchant,
+    private boolean isValidHostname(String shopifyShopUrl) {
+        logger.debug("Checking for valid hostname.");
+
+        if(shopifyFilter.matcher(shopifyShopUrl).matches()) {
+            logger.debug("Hostname filter has passed validation.");
+            return true;
+        } else {
+            logger.warn("Hostname filter did NOT pass validation.");
+            return false;
+        }
+    }
+
+    private boolean isValidHmac(String postbody, String hmacSig, String merchantUrl,
                                 Function<String,byte[]> conversionFunction,
                                 Function<byte[],String> reverseConversionFunction)
             throws NoSuchAlgorithmException, IOException, InvalidKeyException {
@@ -71,13 +92,13 @@ public class ShopifyValidator {
         byte[] hmacSigBytes = conversionFunction.apply(hmacSig);
 
         if (Arrays.equals(computedDigest, hmacSigBytes)) {
-            logger.debug("Request has passed HMAC validation for merchant {}", merchant.toString());
+            logger.debug("Request has passed HMAC validation for merchant {}", merchantUrl);
             return true;
         } else {
             String computedDigestString = reverseConversionFunction.apply(computedDigest);
 
             logger.warn("HMAC filter did NOT pass validation from address merchant {}, hmacSig {}, computed digest {}. postbody:\n{}",
-                    merchant, hmacSig, computedDigestString, postbody);
+                    merchantUrl, hmacSig, computedDigestString, postbody);
 
             return false;
         }
