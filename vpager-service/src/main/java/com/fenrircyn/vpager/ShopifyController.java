@@ -5,15 +5,11 @@ import com.fenrircyn.vpager.business.MerchantBusiness;
 import com.fenrircyn.vpager.dto.Order;
 import com.fenrircyn.vpager.dto.Webhook;
 import com.fenrircyn.vpager.entities.Merchant;
-import com.fenrircyn.vpager.filters.ShopifyValidator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -47,7 +43,7 @@ public class ShopifyController {
         Webhook webhook = new Webhook();
 
         webhook.setTopic("orders/create");
-        webhook.setAddress("https://ee232c57.ngrok.io/shopify");
+        webhook.setAddress("https://ecca17cf.ngrok.io/shopify");
         webhook.setFormat("json");
 
         String url = "https://" + shop + "/admin/webhooks.json";

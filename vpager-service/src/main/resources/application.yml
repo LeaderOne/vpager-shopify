@@ -32,8 +32,8 @@ security:
       tokenName: access_token
       authenticationScheme: query
       clientAuthenticationScheme: form
-      pre-established-redirect-uri: https://ee232c57.ngrok.io/login
-      registered-redirect-uri: https://ee232c57.ngrok.io/login
+      pre-established-redirect-uri: https://ecca17cf.ngrok.io/login
+      registered-redirect-uri: https://ecca17cf.ngrok.io/login
       use-current-uri: false
     resource:
-      userInfoUri: https://${shopify.shop}.myshopify.com/admin/shop.json
+      userInfoUri: https://nowhere
