@@ -1,0 +1,1 @@
+DELETE FROM ticketing.merchant WHERE shopify_shop_url = 'zshop8.myshopify.com';

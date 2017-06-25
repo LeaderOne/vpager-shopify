@@ -5,15 +5,21 @@ import com.fenrircyn.vpager.business.MerchantBusiness;
 import com.fenrircyn.vpager.dto.Order;
 import com.fenrircyn.vpager.dto.Webhook;
 import com.fenrircyn.vpager.entities.Merchant;
+import com.fenrircyn.vpager.filters.MerchantUser;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,13 +53,14 @@ public class ShopifyBackendController {
     @Value("vpager.url")
     private String vpagerAddress;
 
-    @RequestMapping(value = "/shopify/installconfirm")
-    public String installVPager(Principal principal) throws NoSuchAlgorithmException, InvalidKeyException, IOException {
-        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
-        Authentication authentication = oAuth2Authentication.getUserAuthentication();
-        Map<String, String> details = (Map<String, String>) authentication.getDetails();
+    @RequestMapping(value = "/shopify/installconfirm", method = RequestMethod.POST)
+    public String installVPager() throws NoSuchAlgorithmException, InvalidKeyException, IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String shop = details.get("shopUrl");
+        MerchantUser user = (MerchantUser) authentication.getPrincipal();
+        OAuth2AuthenticationDetails authDetails = (OAuth2AuthenticationDetails) authentication.getDetails();
+
+        String shop = user.getShopUrl();
 
         logger.debug("Installing webhook for shop {}", shop);
         Merchant merchant = merchantBusiness.createMerchantFromUrl(shop);
@@ -70,7 +77,16 @@ public class ShopifyBackendController {
 
         logger.debug("Preparing to send webhook request to {} for merchant {}", url, merchant.getId());
 
-        ResponseEntity<Webhook> responseEntity = authenticatedTemplate.postForEntity(url, webhook, Webhook.class);
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+
+        String tokenValue = authDetails.getTokenValue().replace("\n","");
+
+        httpHeaders.add("X-Shopify-Access-Token:", tokenValue);
+
+        HttpEntity<Webhook> httpEntity = new HttpEntity<>(webhook, httpHeaders);
+
+        ResponseEntity<Webhook> responseEntity = authenticatedTemplate.postForEntity(url, httpEntity, Webhook.class);
 
         logger.debug("Received response entity, status " + responseEntity.getStatusCode() + " ID " + webhook.getId());
 

@@ -9,7 +9,7 @@
 
     <p th:text="'Welcome, ' + ${username} +'.  Would you like to install webhooks for ' + ${shop} + '?'" />
 
-    <form action="#" th:action="@{/shopify/install}" method="post">
+    <form action="#" th:action="@{/shopify/installconfirm}" method="post">
         <input type="hidden" name="shop" th:value="${shop}" />
 
         <button type="submit">Install webhook?</button>

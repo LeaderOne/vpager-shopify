@@ -41,6 +41,11 @@
                 <version>${commons-coll.version}</version>
             </dependency>
             <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
@@ -89,6 +94,7 @@
         <spring-security-oauth2.version>2.1.1.RELEASE</spring-security-oauth2.version>
         <bootstrap.version>3.2.0</bootstrap.version>
         <guava.version>22.0</guava.version>
+        <commons-codec.version>1.10</commons-codec.version>
     </properties>
 
     <repositories>
