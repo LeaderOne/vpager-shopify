@@ -5,6 +5,8 @@ import com.fenrircyn.vpager.business.MerchantBusiness;
 import com.fenrircyn.vpager.dto.Order;
 import com.fenrircyn.vpager.dto.Webhook;
 import com.fenrircyn.vpager.entities.Merchant;
+import com.fenrircyn.vpager.entities.ShopifyWebhook;
+import com.fenrircyn.vpager.entities.ShopifyWebhookContainer;
 import com.fenrircyn.vpager.filters.MerchantUser;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
@@ -50,9 +52,10 @@ public class ShopifyBackendController {
     @Resource
     private OAuth2RestTemplate authenticatedTemplate;
 
-    @Value("vpager.url")
+    @Value("${vpager.url}")
     private String vpagerAddress;
 
+    @Transactional
     @RequestMapping(value = "/shopify/installconfirm", method = RequestMethod.POST)
     public String installVPager() throws NoSuchAlgorithmException, InvalidKeyException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -67,10 +70,10 @@ public class ShopifyBackendController {
 
         logger.debug("Created merchant {} for shop {}", merchant.getId(), shop);
 
-        Webhook webhook = new Webhook();
+        ShopifyWebhook webhook = new ShopifyWebhook();
 
         webhook.setTopic("orders/create");
-        webhook.setAddress(vpagerAddress + "/shopify");
+        webhook.setAddress(vpagerAddress + "shopify/webhooks");
         webhook.setFormat("json");
 
         String url = "https://" + shop + "/admin/webhooks.json";
@@ -82,9 +85,9 @@ public class ShopifyBackendController {
 
         String tokenValue = authDetails.getTokenValue().replace("\n","");
 
-        httpHeaders.add("X-Shopify-Access-Token:", tokenValue);
+        httpHeaders.add("X-Shopify-Access-Token", tokenValue);
 
-        HttpEntity<Webhook> httpEntity = new HttpEntity<>(webhook, httpHeaders);
+        HttpEntity<ShopifyWebhookContainer> httpEntity = new HttpEntity<>(new ShopifyWebhookContainer(webhook), httpHeaders);
 
         ResponseEntity<Webhook> responseEntity = authenticatedTemplate.postForEntity(url, httpEntity, Webhook.class);
 

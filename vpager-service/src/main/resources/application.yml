@@ -17,7 +17,7 @@ shopify:
   shop: zshop8
   scopes: read_customers,read_orders
 vpager:
-      url: https://a9821e95.ngrok.io/
+      url: https://5a8207a7.ngrok.io/
 logging:
   level:
     com:

@@ -1,5 +1,7 @@
 package com.fenrircyn.vpager.entities;
 
+import com.fenrircyn.vpager.dto.Webhook;
+
 import java.io.Serializable;
 
 /**
@@ -9,6 +11,14 @@ public class ShopifyWebhookContainer implements Serializable {
     private static final long serialVersionUID = 982187213761276L;
 
     private ShopifyWebhook webhook;
+
+    public ShopifyWebhookContainer() {
+
+    }
+
+    public ShopifyWebhookContainer(ShopifyWebhook webhook) {
+        this.webhook = webhook;
+    }
 
     public ShopifyWebhook getWebhook() {
         return webhook;
