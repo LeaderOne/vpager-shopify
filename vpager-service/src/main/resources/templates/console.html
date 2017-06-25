@@ -5,11 +5,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
+    <h1>VPager Post-Install</h1>
+
+    <p th:text="'Welcome, ' + ${username} +'.  Would you like to install webhooks for ' + ${shop} + '?'" />
+
     <form action="#" th:action="@{/shopify/install}" method="post">
-        <input type="hidden" name="shop" th:value="${param.shop[0]}" />
-        <input type="hidden" name="code" th:value="${param.code[0]}" />
-        <input type="hidden" name="timestamp" th:value="${param.timestamp[0]}" />
-        <input type="hidden" name="hmac" th:value="${param.hmac[0]}" />
+        <input type="hidden" name="shop" th:value="${shop}" />
 
         <button type="submit">Install webhook?</button>
     </form>

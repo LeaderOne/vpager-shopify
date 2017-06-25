@@ -9,22 +9,30 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.security.auth.Subject;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by markelba on 12/11/16.
  */
 @RestController
-public class ShopifyController {
+public class ShopifyBackendController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Resource
@@ -39,9 +47,14 @@ public class ShopifyController {
     @Value("vpager.url")
     private String vpagerAddress;
 
-    @RequestMapping(value = "/shopify/install", method = RequestMethod.GET)
-    public String installVPager(@RequestParam("shop") String shop //Shopify included automatically
-     ) throws NoSuchAlgorithmException, InvalidKeyException, IOException {
+    @RequestMapping(value = "/shopify/installconfirm")
+    public String installVPager(Principal principal) throws NoSuchAlgorithmException, InvalidKeyException, IOException {
+        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
+        Authentication authentication = oAuth2Authentication.getUserAuthentication();
+        Map<String, String> details = (Map<String, String>) authentication.getDetails();
+
+        String shop = details.get("shopUrl");
+
         logger.debug("Installing webhook for shop {}", shop);
         Merchant merchant = merchantBusiness.createMerchantFromUrl(shop);
 

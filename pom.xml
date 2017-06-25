@@ -41,6 +41,11 @@
                 <version>${commons-coll.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
@@ -83,6 +88,7 @@
         <qrgen.version>2.1.0</qrgen.version>
         <spring-security-oauth2.version>2.1.1.RELEASE</spring-security-oauth2.version>
         <bootstrap.version>3.2.0</bootstrap.version>
+        <guava.version>22.0</guava.version>
     </properties>
 
     <repositories>

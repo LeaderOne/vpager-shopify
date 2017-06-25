@@ -32,8 +32,8 @@ security:
       tokenName: access_token
       authenticationScheme: query
       clientAuthenticationScheme: form
-      pre-established-redirect-uri: https://a9821e95.ngrok.io/install
-      registered-redirect-uri: https://a9821e95.ngrok.io/install
+      pre-established-redirect-uri: https://5a8207a7.ngrok.io/install
+      registered-redirect-uri: https://5a8207a7.ngrok.io/install
       use-current-uri: false
     resource:
       userInfoUri: https://${shopify.shop}.myshopify.com/admin/shop.json

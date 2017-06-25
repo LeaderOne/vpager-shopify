@@ -1,6 +1,7 @@
 package com.fenrircyn.vpager;
 
 import com.fenrircyn.vpager.filters.ShopifyInstallVerificationFilter;
+import com.fenrircyn.vpager.filters.ShopifyPrincipalExtractor;
 import com.fenrircyn.vpager.filters.ShopifyProxyFilter;
 import com.fenrircyn.vpager.filters.ShopifyValidator;
 import org.apache.catalina.filters.RequestDumperFilter;
@@ -21,6 +22,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -39,14 +41,17 @@ public class VPagerConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        OAuth2RestTemplate shopifyRestTemplate = shopifyRestTemplate();
+        Filter shopifySsoFilter = ssoFilter(shopifyRestTemplate, shopifyUserTokenServices(shopifyRestTemplate));
+
         http.antMatcher("/**")
-                .authorizeRequests().antMatchers("/install**", "/shopify**", "/shopify/**")
+                .authorizeRequests().antMatchers("/install**")
                     .permitAll().anyRequest()
                 .authenticated().and().exceptionHandling()
                     .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/install"))
                 .and().logout().logoutSuccessUrl("/logout").permitAll()
                 .and().csrf().disable()
-                .addFilterBefore(ssoFilter(shopifyRestTemplate()), BasicAuthenticationFilter.class);
+                .addFilterBefore(shopifySsoFilter, BasicAuthenticationFilter.class);
     }
 
 
@@ -63,17 +68,24 @@ public class VPagerConfig extends WebSecurityConfigurerAdapter {
         return new OAuth2RestTemplate(shopify(), oauth2ClientContext);
     }
 
+    @Bean
+    public UserInfoTokenServices shopifyUserTokenServices(OAuth2RestTemplate shopifyRestTemplate) {
+        UserInfoTokenServices userInfoTokenServices = new UserInfoTokenServices(shopifyResource().getUserInfoUri(), shopify().getClientId());
+        userInfoTokenServices.setRestTemplate(shopifyRestTemplate);
+        userInfoTokenServices.setPrincipalExtractor(new ShopifyPrincipalExtractor());
 
-    private Filter ssoFilter(OAuth2RestTemplate shopifyRestTemplate) {
+        return userInfoTokenServices;
+    }
+
+
+    private Filter ssoFilter(OAuth2RestTemplate shopifyRestTemplate, UserInfoTokenServices shopifyUserTokenServices) {
         OAuth2ClientAuthenticationProcessingFilter vpagerFilter = new OAuth2ClientAuthenticationProcessingFilter(
                 "/install");
 
         vpagerFilter.setRestTemplate(shopifyRestTemplate);
 
-        UserInfoTokenServices tokenServices = new UserInfoTokenServices(shopifyResource().getUserInfoUri(), shopify().getClientId());
-        tokenServices.setRestTemplate(shopifyRestTemplate);
-        vpagerFilter.setTokenServices(tokenServices);
-        vpagerFilter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/somewhere"));
+        vpagerFilter.setTokenServices(shopifyUserTokenServices);
+        vpagerFilter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/shopify/user/console"));
 
         return vpagerFilter;
     }
