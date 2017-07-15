@@ -1,9 +1,6 @@
 package com.fenrircyn.vpager;
 
-import com.fenrircyn.vpager.filters.ShopifyAuthCodeAccessTokenProvider;
-import com.fenrircyn.vpager.filters.ShopifyPrincipalExtractor;
-import com.fenrircyn.vpager.filters.ShopifyProxyFilter;
-import com.fenrircyn.vpager.filters.ShopifyValidator;
+import com.fenrircyn.vpager.filters.*;
 import org.apache.catalina.filters.RequestDumperFilter;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
@@ -22,8 +19,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.Filter;
@@ -99,6 +94,16 @@ public class VPagerConfig extends WebSecurityConfigurerAdapter {
         Filter requestDumperFilter = new RequestDumperFilter();
         registration.setFilter(requestDumperFilter);
         registration.addUrlPatterns("/*");
+        return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean shopifyApiValidationFilter(ShopifyAPIValidationFilter filter) {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+
+        registration.setFilter(filter);
+        registration.addUrlPatterns("/shopify/webhooks**");
+
         return registration;
     }
 
