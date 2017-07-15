@@ -1,6 +1,6 @@
 package com.fenrircyn.vpager;
 
-import com.fenrircyn.vpager.filters.ShopifyInstallVerificationFilter;
+import com.fenrircyn.vpager.filters.ShopifyAuthCodeAccessTokenProvider;
 import com.fenrircyn.vpager.filters.ShopifyPrincipalExtractor;
 import com.fenrircyn.vpager.filters.ShopifyProxyFilter;
 import com.fenrircyn.vpager.filters.ShopifyValidator;
@@ -34,14 +34,12 @@ public class VPagerConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private OAuth2ClientContext oauth2ClientContext;
 
-    @Bean
-    public RestTemplate shopifyApiRestTemplate() {
-        return new RestTemplate();
-    }
+    @Resource
+    private ShopifyValidator validator;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        OAuth2RestTemplate shopifyRestTemplate = shopifyRestTemplate();
+        OAuth2RestTemplate shopifyRestTemplate = shopifyRestTemplate(validator);
         Filter shopifySsoFilter = ssoFilter(shopifyRestTemplate, shopifyUserTokenServices(shopifyRestTemplate));
 
         http.antMatcher("/**")
@@ -64,8 +62,13 @@ public class VPagerConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public OAuth2RestTemplate shopifyRestTemplate() {
-        return new OAuth2RestTemplate(shopify(), oauth2ClientContext);
+    public OAuth2RestTemplate shopifyRestTemplate(ShopifyValidator validator) {
+        OAuth2RestTemplate shopifyRestTemplate = new OAuth2RestTemplate(shopify(), oauth2ClientContext);
+
+        ShopifyAuthCodeAccessTokenProvider provider = new ShopifyAuthCodeAccessTokenProvider(validator);
+        shopifyRestTemplate.setAccessTokenProvider(provider);
+
+        return shopifyRestTemplate;
     }
 
     @Bean
@@ -105,22 +108,6 @@ public class VPagerConfig extends WebSecurityConfigurerAdapter {
         Filter proxyFilter = new ShopifyProxyFilter(validator);
 
         registration.setFilter(proxyFilter);
-
-        return registration;
-    }
-
-    @Bean
-    public ShopifyInstallVerificationFilter shopifyLoginFilter(ShopifyValidator shopifyValidator) {
-        return new ShopifyInstallVerificationFilter(shopifyValidator);
-    }
-
-    @Bean
-    public FilterRegistrationBean shopifyLoginFilterRegistration(ShopifyInstallVerificationFilter shopifyInstallVerificationFilter) {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-
-        registration.setFilter(shopifyInstallVerificationFilter);
-        registration.addUrlPatterns("/*");
-        registration.setOrder(-100);
 
         return registration;
     }
