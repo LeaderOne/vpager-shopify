@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "merchant", schema = "ticketing")
 public class Merchant implements Serializable {
-    private static final long serialVersionUID = 879636873487963L;
+    private static final long serialVersionUID = 879636873887963L;
 
     @Id
     @Column(name = "merchant_id")
@@ -26,6 +26,9 @@ public class Merchant implements Serializable {
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "shopify_customer_id")
+    private long shopifyCustomerId;
 
     public Merchant() {}
 
@@ -63,6 +66,14 @@ public class Merchant implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public long getShopifyCustomerId() {
+        return shopifyCustomerId;
+    }
+
+    public void setShopifyCustomerId(long shopifyCustomerId) {
+        this.shopifyCustomerId = shopifyCustomerId;
     }
 
     @Override

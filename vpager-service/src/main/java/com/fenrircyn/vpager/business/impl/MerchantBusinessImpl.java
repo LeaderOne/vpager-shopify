@@ -56,7 +56,7 @@ public class MerchantBusinessImpl implements MerchantBusiness {
     }
 
     @Override
-    public Merchant getByShopifyShopUrl(String shopifyShopUrl) {
-        return merchantRepository.getByShopifyShopUrl(shopifyShopUrl);
+    public Merchant getByShopifyCustomerId(long shopifyCustomerId) {
+        return merchantRepository.getByShopifyCustomerId(shopifyCustomerId);
     }
 }

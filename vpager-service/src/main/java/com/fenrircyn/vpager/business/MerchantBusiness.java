@@ -12,7 +12,8 @@ public interface MerchantBusiness {
     Iterable<Merchant> createMerchantsFromOrder(Order order);
 
     Merchant createMerchantFromUrl(String url);
-    Merchant getByShopifyShopUrl(String url);
 
     List<Merchant> getMerchantsByEmail(String email);
+
+    Merchant getByShopifyCustomerId(long shopifyCustomerId);
 }

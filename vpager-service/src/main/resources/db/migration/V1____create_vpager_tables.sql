@@ -9,6 +9,8 @@ CREATE TABLE ticketing.merchant
   merchant_id SERIAL PRIMARY KEY,
   now_serving INT DEFAULT 0,
   shopify_customer_id BIGINT UNIQUE,
+  shopify_shop_url TEXT,
+  email TEXT UNIQUE,
   number_of_tickets BIGINT
 );
 
@@ -29,3 +31,5 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ticketing TO standarduser;
 GRANT USAGE ON SCHEMA ticketing TO standarduser;
 
 GRANT CONNECT ON DATABASE vpager TO standarduser;
+
+REVOKE ALL ON DATABASE vpager FROM PUBLIC ;

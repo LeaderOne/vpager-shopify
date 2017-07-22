@@ -55,11 +55,12 @@ public class ShopifyAuthCodeAccessTokenProvider extends AuthorizationCodeAccessT
                             "&shop=" + shop +
                             "&state=" + state +
                             "&timestamp=" + epochTime;
-            logger.debug("Shopify sent signature for validation.  Merchant will NOT be validated since this is the first login. Signature: {}", hmac);
+            logger.debug("Shopify sent signature for validation.  Merchant will NOT be validated since this is connecting Shopify to VPager. Signature: {}", hmac);
 
             valid = validator.validateHexEncodedNoMerchant(shop, hmac, combinedStuff);
         } catch (IOException | InvalidKeyException | NoSuchAlgorithmException e) {
             logger.error("An error occurred trying to validate the incoming API call...", e);
+            throw new OAuth2AccessDeniedException("NOPE.", details, e);
         } catch (NumberFormatException e) {
             logger.error("Either code, shop or timestamp was not valid: " +
                     tokenRequest.get("code") + ", shop: " +
