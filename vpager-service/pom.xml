@@ -82,6 +82,33 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>local-development</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <db.url>jdbc:postgresql://localhost:32773/vpager</db.url>
+                <db.user>vpagerowner</db.user>
+                <db.password>1WBbg625PG%</db.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-deployment</id>
+            <activation>
+                <property>
+                    <name>bamboo_BUILD_NUMBER</name>
+                </property>
+            </activation>
+            <properties>
+                <db.url>${env.bamboo_FLYWAY_URL}</db.url>
+                <db.user>${env.bamboo_FLYWAY_USER}</db.user>
+                <db.password>${env.bamboo_FLYWAY_PASSWORD}</db.password>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -95,20 +122,12 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>4.0.3</version>
                 <configuration>
                     <driver>org.postgresql.Driver</driver>
-                    <url>${env.bamboo_FLYWAY_URL}</url>
-                    <user>${env.bamboo_FLYWAY_USER}</user>
-                    <password>${env.bamboo_FLYWAY_PASSWORD}</password>
+                    <url>${db.url}</url>
+                    <user>${db.user}</user>
+                    <password>${db.password}</password>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.postgresql</groupId>
-                        <artifactId>postgresql</artifactId>
-                        <version>${postgresql.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

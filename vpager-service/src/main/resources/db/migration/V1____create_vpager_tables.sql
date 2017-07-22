@@ -8,14 +8,14 @@ CREATE TABLE ticketing.merchant
 (
   merchant_id SERIAL PRIMARY KEY,
   now_serving INT DEFAULT 0,
-  shopify_shop_url TEXT UNIQUE
+  shopify_customer_id BIGINT UNIQUE,
+  number_of_tickets BIGINT
 );
 
 CREATE TABLE ticketing.ticket
 (
   ticket_id SERIAL PRIMARY KEY,
   merchant_id INT REFERENCES ticketing.merchant(merchant_id) NOT NULL,
-  shopify_order_id BIGINT UNIQUE,
   create_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

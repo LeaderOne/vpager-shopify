@@ -82,6 +82,30 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-maven-plugin</artifactId>
+                    <version>${flyway.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.postgresql</groupId>
+                            <artifactId>postgresql</artifactId>
+                            <version>${postgresql.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
     <properties>
         <java.version>1.8</java.version>
@@ -95,6 +119,8 @@
         <bootstrap.version>3.2.0</bootstrap.version>
         <guava.version>22.0</guava.version>
         <commons-codec.version>1.10</commons-codec.version>
+        <flyway.version>4.2.0</flyway.version>
+        <spring-boot.version>1.5.4.RELEASE</spring-boot.version>
     </properties>
 
     <repositories>

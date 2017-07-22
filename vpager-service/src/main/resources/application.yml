@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:32768/vpager
+    url: jdbc:postgresql://localhost:32773/vpager
     username: vpageruser
     password: vpageruser
   data:
