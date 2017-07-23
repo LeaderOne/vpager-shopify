@@ -11,7 +11,7 @@ public class ShopifyMerchantCustomerUser extends User {
     private ShopOwnerUser customerOf;
     private long customerId;
 
-    public ShopifyMerchantCustomerUser(long customerId, String username, String password,
+    public ShopifyMerchantCustomerUser(String username, String password,
                                        String shopUrl, boolean enabled, boolean accountNonExpired,
                                        boolean credentialsNonExpired, boolean accountNonLocked,
                                        Collection<? extends GrantedAuthority> authorities) {

@@ -65,7 +65,7 @@ public class ShopifyBackendController {
         ShopifyWebhook webhook = new ShopifyWebhook();
 
         webhook.setTopic("orders/create");
-        webhook.setAddress(vpagerAddress + "zmsg/shopify/create");
+        webhook.setAddress(vpagerAddress + "shopify/create");
         webhook.setFormat("json");
 
         String url = "https://" + shop + "/admin/webhooks.json";
@@ -89,7 +89,7 @@ public class ShopifyBackendController {
     }
 
 
-    @RequestMapping(value = "/zmsg/shopify/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/shopify/create", method = RequestMethod.POST)
     @Transactional
     public ResponseEntity<Iterable<Merchant>> createVPagersFromOrder(@RequestBody String postbody)
             throws NoSuchAlgorithmException, InvalidKeyException, IOException {
@@ -109,7 +109,7 @@ public class ShopifyBackendController {
     }
 
     //Note: combined parameters must be alphabetical and use hex encoding instead of base 64 signatures!
-    @RequestMapping(value = "/zservice/shopify/mypagers", method = RequestMethod.GET)
+    @RequestMapping(value = "/shopify/mypagers", method = RequestMethod.GET)
     public ResponseEntity<List<Merchant>> getMyPagers(
             @RequestParam("email") String email
     ) throws NoSuchAlgorithmException, InvalidKeyException, IOException {

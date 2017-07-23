@@ -4,28 +4,37 @@ import com.fenrircyn.vpager.security.ShopifyMerchantCustomerUser;
 import com.fenrircyn.vpager.security.ValidRoles;
 import com.google.common.collect.Sets;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collections;
 
 public class ShopifyAuthenticationToken extends AbstractAuthenticationToken {
-    private static long serialVersionUID = 5948388888L;
+    private static final long serialVersionUID = 5948388888L;
 
     private String shopifyShopUrl;
-    private long customerId;
     private String hmac;
     private String body;
     protected ShopifyMerchantCustomerUser principal;
 
 
-    public ShopifyAuthenticationToken(String shopifyShopUrl, String customerEmail, String hmac, String body,
-                                      long customerId) {
-        super(Collections.singletonList(ValidRoles.PROXY_ROLE));
+    public ShopifyAuthenticationToken(String shopifyShopUrl, String hmac, String body) {
+        super(Collections.singletonList(ValidRoles.WEBHOOK_ROLE));
 
         this.shopifyShopUrl = shopifyShopUrl;
-        this.customerId = customerId;
         this.hmac = hmac;
         this.body = body;
-        this.principal = new ShopifyMerchantCustomerUser(customerId, customerEmail, "unknown", shopifyShopUrl,
+        this.principal = new ShopifyMerchantCustomerUser("webhook","unknown", shopifyShopUrl,
+                true, true, true, true,
+                Sets.newHashSet(ValidRoles.USER_ROLE));
+    }
+
+    protected ShopifyAuthenticationToken(String shopifyShopUrl, String hmac, String body, ValidRoles authority) {
+        super(Collections.singletonList(authority));
+
+        this.shopifyShopUrl = shopifyShopUrl;
+        this.hmac = hmac;
+        this.body = body;
+        this.principal = new ShopifyMerchantCustomerUser("webhook","unknown", shopifyShopUrl,
                 true, true, true, true,
                 Sets.newHashSet(ValidRoles.USER_ROLE));
     }
@@ -42,10 +51,6 @@ public class ShopifyAuthenticationToken extends AbstractAuthenticationToken {
 
     public String getShopifyShopUrl() {
         return shopifyShopUrl;
-    }
-
-    public long getCustomerId() {
-        return customerId;
     }
 
     public String getHmac() {

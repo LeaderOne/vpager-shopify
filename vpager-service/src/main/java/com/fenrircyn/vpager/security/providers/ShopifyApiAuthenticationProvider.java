@@ -1,7 +1,7 @@
 package com.fenrircyn.vpager.security.providers;
 
 import com.fenrircyn.vpager.security.token.ShopifyAuthenticationToken;
-import com.fenrircyn.vpager.security.token.ShopifyWebhookAuthenticationToken;
+import com.fenrircyn.vpager.security.token.ShopifyProxyAuthenticationToken;
 import com.fenrircyn.vpager.security.validation.ShopifyValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +28,12 @@ public class ShopifyApiAuthenticationProvider implements AuthenticationProvider 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Authentication decision = null;
 
-        if (authentication instanceof ShopifyWebhookAuthenticationToken) {
-            logger.debug("Authentication instance is a webhook request");
-            decision = authenticateWebhook(authentication);
-        } else {
+        if (authentication instanceof ShopifyProxyAuthenticationToken) {
             logger.debug("Authentication instance is a proxy request");
-            decision = authenticateProxy(authentication);
+            decision = authenticateProxyRequest(authentication);
+        } else {
+            logger.debug("Authentication instance is a webhook request");
+            decision = authenticateWebhookRequest(authentication);
         }
 
 
@@ -41,11 +41,12 @@ public class ShopifyApiAuthenticationProvider implements AuthenticationProvider 
     }
 
 
-    private Authentication authenticateProxy(Authentication authentication) {
-        Authentication decision;ShopifyAuthenticationToken shopifyAuthenticationToken = (ShopifyAuthenticationToken) authentication;
+    private Authentication authenticateWebhookRequest(Authentication authentication) {
+        Authentication decision;
+        ShopifyAuthenticationToken shopifyAuthenticationToken = (ShopifyAuthenticationToken) authentication;
 
         try {
-            if(shopifyValidator.validateHexEncoded(shopifyAuthenticationToken.getShopifyShopUrl(), shopifyAuthenticationToken.getHmac(), shopifyAuthenticationToken.getBody())) {
+            if(shopifyValidator.validateHmac64(shopifyAuthenticationToken.getShopifyShopUrl(), shopifyAuthenticationToken.getHmac(), shopifyAuthenticationToken.getBody())) {
                 authentication.setAuthenticated(true);
                 decision = authentication;
             } else {
@@ -58,19 +59,13 @@ public class ShopifyApiAuthenticationProvider implements AuthenticationProvider 
     }
 
 
-    private Authentication authenticateWebhook(Authentication authentication) {
-        Authentication decision;ShopifyWebhookAuthenticationToken shopifyAuthenticationToken = (ShopifyWebhookAuthenticationToken) authentication;
-
-        String combinedStuff =
-                "customer_id=" + shopifyAuthenticationToken.getCustomerId() +
-                        "email=" + shopifyAuthenticationToken.getEmail() +
-                        "hash=" + shopifyAuthenticationToken.getHash() +
-                        "path_prefix=" + shopifyAuthenticationToken.getPathPrefix() +
-                        "shop=" + shopifyAuthenticationToken.getShopifyShopUrl() +
-                        "timestamp=" + shopifyAuthenticationToken.getEpochTime();
+    private Authentication authenticateProxyRequest(Authentication authentication) {
+        Authentication decision;
+        ShopifyProxyAuthenticationToken shopifyAuthenticationToken = (ShopifyProxyAuthenticationToken) authentication;
 
         try {
-            if(shopifyValidator.validateHmac64(shopifyAuthenticationToken.getShopifyShopUrl(), shopifyAuthenticationToken.getHmac(), combinedStuff)) {
+            if(shopifyValidator.validateHexEncoded(shopifyAuthenticationToken.getShopifyShopUrl(),
+                    shopifyAuthenticationToken.getHmac(), shopifyAuthenticationToken.getBody())) {
                 authentication.setAuthenticated(true);
                 decision = authentication;
             } else {

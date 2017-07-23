@@ -120,7 +120,7 @@ public class MerchantController {
         }
     }
 
-    @RequestMapping(value = "/zservice/merchant/{customerId}/hangoutashingle", method = RequestMethod.GET, produces = "image/jpg")
+    @RequestMapping(value = "/shopify/merchant/{customerId}/hangoutashingle", method = RequestMethod.GET, produces = "image/jpg")
     public @ResponseBody byte[] getQrCodeForMerchantByShopifyCustId(@PathVariable long customerId, HttpServletRequest request) throws Exception {
         return getQrCodeById(request,
                 (Void) -> "/ticket.html?customerId=" + customerId

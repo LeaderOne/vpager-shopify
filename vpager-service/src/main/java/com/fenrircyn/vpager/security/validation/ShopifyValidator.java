@@ -47,7 +47,7 @@ public class ShopifyValidator {
     public boolean validateHmac64(String shopifyShopUrl, String hmacSig64, String body) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
         Merchant merchant = getRegisteredMerchant(shopifyShopUrl);
 
-        if (merchant != null && isValidHmac(body, hmacSig64, merchant.getShopifyShopUrl(),
+        if (merchant != null && isValidHmac(body, hmacSig64, shopifyShopUrl,
                 DatatypeConverter::parseBase64Binary, DatatypeConverter::printBase64Binary)) {
             logger.debug("Request has passed validation.");
 
