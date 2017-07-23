@@ -1,8 +1,8 @@
-package com.fenrircyn.vpager.filters;
+package com.fenrircyn.vpager.security.filters;
 
+import com.fenrircyn.vpager.security.validation.ShopifyValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
@@ -76,7 +76,7 @@ public class ShopifyProxyFilter implements Filter {
                             "timestamp=" + epochTime;
             logger.debug("Shopify sent signature for validation: " + hmac);
 
-            valid = validator.validateHexEncoded(shop, hmac, combinedStuff);
+            valid = validator.validateHmac64(shop, hmac, combinedStuff);
         } catch (IOException | InvalidKeyException | NoSuchAlgorithmException e) {
             logger.error("An error occurred trying to validate the incoming API call...", e);
         } catch (NumberFormatException e) {

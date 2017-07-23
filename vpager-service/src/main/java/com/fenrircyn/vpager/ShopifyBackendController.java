@@ -7,34 +7,26 @@ import com.fenrircyn.vpager.dto.Webhook;
 import com.fenrircyn.vpager.entities.Merchant;
 import com.fenrircyn.vpager.entities.ShopifyWebhook;
 import com.fenrircyn.vpager.entities.ShopifyWebhookContainer;
-import com.fenrircyn.vpager.filters.MerchantUser;
-import org.apache.commons.codec.binary.Base64;
+import com.fenrircyn.vpager.security.ShopOwnerUser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.security.auth.Subject;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by markelba on 12/11/16.
@@ -60,7 +52,7 @@ public class ShopifyBackendController {
     public String installVPager() throws NoSuchAlgorithmException, InvalidKeyException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        MerchantUser user = (MerchantUser) authentication.getPrincipal();
+        ShopOwnerUser user = (ShopOwnerUser) authentication.getPrincipal();
         OAuth2AuthenticationDetails authDetails = (OAuth2AuthenticationDetails) authentication.getDetails();
 
         String shop = user.getShopUrl();
@@ -73,7 +65,7 @@ public class ShopifyBackendController {
         ShopifyWebhook webhook = new ShopifyWebhook();
 
         webhook.setTopic("orders/create");
-        webhook.setAddress(vpagerAddress + "shopify/webhooks");
+        webhook.setAddress(vpagerAddress + "zmsg/shopify/create");
         webhook.setFormat("json");
 
         String url = "https://" + shop + "/admin/webhooks.json";
@@ -97,7 +89,7 @@ public class ShopifyBackendController {
     }
 
 
-    @RequestMapping(value = "/shopify/client", method = RequestMethod.POST)
+    @RequestMapping(value = "/zmsg/shopify/create", method = RequestMethod.POST)
     @Transactional
     public ResponseEntity<Iterable<Merchant>> createVPagersFromOrder(@RequestBody String postbody)
             throws NoSuchAlgorithmException, InvalidKeyException, IOException {
@@ -117,7 +109,7 @@ public class ShopifyBackendController {
     }
 
     //Note: combined parameters must be alphabetical and use hex encoding instead of base 64 signatures!
-    @RequestMapping(value = "/shopify/mypagers", method = RequestMethod.GET)
+    @RequestMapping(value = "/zservice/shopify/mypagers", method = RequestMethod.GET)
     public ResponseEntity<List<Merchant>> getMyPagers(
             @RequestParam("email") String email
     ) throws NoSuchAlgorithmException, InvalidKeyException, IOException {

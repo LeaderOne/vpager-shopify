@@ -17,6 +17,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -45,6 +46,8 @@ public class MerchantController {
 
         return m;
     }
+
+
 
     @RequestMapping(method = RequestMethod.POST, value = "/merchant/{merchantId}/serve")
     public ResponseEntity<Long> serveCustomer(@PathVariable long merchantId)
@@ -117,13 +120,26 @@ public class MerchantController {
         }
     }
 
+    @RequestMapping(value = "/zservice/merchant/{customerId}/hangoutashingle", method = RequestMethod.GET, produces = "image/jpg")
+    public @ResponseBody byte[] getQrCodeForMerchantByShopifyCustId(@PathVariable long customerId, HttpServletRequest request) throws Exception {
+        return getQrCodeById(request,
+                (Void) -> "/ticket.html?customerId=" + customerId
+        );
+    }
+
     @RequestMapping(value = "/merchant/{merchantId}/hangoutashingle", method = RequestMethod.GET, produces = "image/jpg")
     public @ResponseBody byte[] getQrCodeForMerchant(@PathVariable long merchantId, HttpServletRequest request) throws Exception {
+        return getQrCodeById(request,
+                (Void) -> "/ticket.html?merchantId=" + merchantId
+                );
+    }
+
+    private byte[] getQrCodeById(HttpServletRequest request, Function<Void, String> getMerchantQuery) {
         String serverName = request.getServerName();
         int serverPort = request.getServerPort();
         String contextPath = request.getContextPath();
 
-        String finalQrCodeUrl = "http://" + serverName + ":" + serverPort + contextPath + "/ticket.html?merchantId=" + merchantId;
+        String finalQrCodeUrl = "http://" + serverName + ":" + serverPort + contextPath + getMerchantQuery.apply(null);
 
         ByteArrayOutputStream qrCodeFile = QRCode.from(finalQrCodeUrl).to(ImageType.JPG).stream();
 

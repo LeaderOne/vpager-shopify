@@ -1,8 +1,10 @@
-package com.fenrircyn.vpager.filters;
+package com.fenrircyn.vpager.security.providers;
 
+import com.fenrircyn.vpager.security.validation.ShopifyValidator;
 import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.client.resource.OAuth2AccessDeniedException;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
@@ -13,9 +15,7 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -24,15 +24,12 @@ import java.security.NoSuchAlgorithmException;
  * Created by markelba on 2/4/17.
  * This appears to be the only way possible to validate the code against Shopify's guidelines on redirect.  Strange.
  */
-//TODO: Change this to an AuthorizationCodeAccessTokenProvider to validate params on redirect (see bookmark 1)
+@Component
 public class ShopifyAuthCodeAccessTokenProvider extends AuthorizationCodeAccessTokenProvider {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private ShopifyValidator validator;
 
-    public ShopifyAuthCodeAccessTokenProvider(ShopifyValidator validator) {
-        super();
-        this.validator = validator;
-    }
+    @Resource
+    private ShopifyValidator validator;
 
     @Override
     public OAuth2AccessToken obtainAccessToken(OAuth2ProtectedResourceDetails details, AccessTokenRequest tokenRequest)
