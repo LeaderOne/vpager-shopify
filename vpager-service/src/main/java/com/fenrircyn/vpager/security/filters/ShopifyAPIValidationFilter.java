@@ -117,7 +117,7 @@ public class ShopifyAPIValidationFilter extends AbstractAuthenticationProcessing
 
     @Override
     protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        return true;
+        return request.getRequestURI().contains("/services/shopify");
     }
 
     @Override

@@ -97,7 +97,7 @@ public class ShopifyValidator {
         } else {
             String computedDigestString = reverseConversionFunction.apply(computedDigest);
 
-            logger.warn("HMAC filter did NOT pass validation from address merchant {}, hmacSig {}, computed digest {}. postbody:\n{}",
+            logger.warn("HMAC filter did NOT pass validation from merchant address {}, hmacSig {}, computed digest {}. postbody:\n{}",
                     merchantUrl, hmacSig, computedDigestString, postbody);
 
             return false;
