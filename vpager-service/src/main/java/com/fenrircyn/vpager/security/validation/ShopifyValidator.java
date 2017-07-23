@@ -81,7 +81,7 @@ public class ShopifyValidator {
                                 Function<String, byte[]> conversionFunction,
                                 Function<byte[], String> reverseConversionFunction)
             throws NoSuchAlgorithmException, IOException, InvalidKeyException {
-        byte[] key = shopifySharedSecret.getBytes();
+        byte[] key = shopifySharedSecret.getBytes("UTF-8");
         byte[] msgBytes = postbody.getBytes("UTF-8");
 
         SecretKey macKey = new SecretKeySpec(key, "HmacSHA256");
