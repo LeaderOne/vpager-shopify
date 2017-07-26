@@ -60,4 +60,29 @@ public class ShopifyAuthenticationToken extends AbstractAuthenticationToken {
     public String getBody() {
         return body;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ShopifyAuthenticationToken)) return false;
+        if (!super.equals(o)) return false;
+
+        ShopifyAuthenticationToken that = (ShopifyAuthenticationToken) o;
+
+        if (getShopifyShopUrl() != null ? !getShopifyShopUrl().equals(that.getShopifyShopUrl()) : that.getShopifyShopUrl() != null)
+            return false;
+        if (getHmac() != null ? !getHmac().equals(that.getHmac()) : that.getHmac() != null) return false;
+        if (getBody() != null ? !getBody().equals(that.getBody()) : that.getBody() != null) return false;
+        return getPrincipal() != null ? getPrincipal().equals(that.getPrincipal()) : that.getPrincipal() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 1;
+        result = 31 * result + (getShopifyShopUrl() != null ? getShopifyShopUrl().hashCode() : 0);
+        result = 31 * result + (getHmac() != null ? getHmac().hashCode() : 0);
+        result = 31 * result + (getBody() != null ? getBody().hashCode() : 0);
+        result = 31 * result + (getPrincipal() != null ? getPrincipal().hashCode() : 0);
+        return result;
+    }
 }

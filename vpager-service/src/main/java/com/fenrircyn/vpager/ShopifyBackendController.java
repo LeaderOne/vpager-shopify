@@ -65,7 +65,7 @@ public class ShopifyBackendController {
         ShopifyWebhook webhook = new ShopifyWebhook();
 
         webhook.setTopic("orders/create");
-        webhook.setAddress(vpagerAddress + "shopify/create");
+        webhook.setAddress(vpagerAddress + "/shopify/create");
         webhook.setFormat("json");
 
         String url = "https://" + shop + "/admin/webhooks.json";
