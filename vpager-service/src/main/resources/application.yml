@@ -25,8 +25,8 @@ logging:
 security:
   oauth2:
     client:
-      clientId: 03e30691fc549632ea4fb7e16bf6457b
-      clientSecret: 052e216f94e625a68f0c8b571b51b6db
+      clientId: clientId
+      clientSecret: clientSecret
       accessTokenUri: https://${shopify.shop}.myshopify.com/admin/oauth/access_token
       userAuthorizationUri: https://${shopify.shop}.myshopify.com/admin/oauth/authorize?scope=${shopify.scopes}&grant_options[]=
       tokenName: access_token
